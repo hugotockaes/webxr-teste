@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Meu primeiro WebXR MR</title>
+
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+</head>
+
+<body>
+
+  <a-scene
+    webxr="requiredFeatures: local-floor;
+           optionalFeatures: bounded-floor, hand-tracking"
+    background="transparent: true">
+
+    <!-- Luz -->
+    <a-light
+      type="ambient"
+      intensity="1.2">
+    </a-light>
+
+    <a-light
+      type="directional"
+      intensity="1"
+      position="1 2 1">
+    </a-light>
+
+    <!-- NOSSO PRIMEIRO OBJETO -->
+    <a-box
+      position="0 1.4 -2"
+      width="0.4"
+      height="0.4"
+      depth="0.4"
+      color="#FF3355"
+      rotation="0 45 0">
+    </a-box>
+
+    <!-- Câmera -->
+    <a-camera position="0 1.6 0"></a-camera>
+
+  </a-scene>
+
+</body>
+</html>
