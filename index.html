@@ -1,47 +1,121 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Meu primeiro WebXR MR</title>
+  <title>WebXR - Realidade Mista</title>
 
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #botaoAR {
+      position: fixed;
+      left: 50%;
+      bottom: 40px;
+      transform: translateX(-50%);
+      z-index: 9999;
+
+      padding: 18px 28px;
+      border: none;
+      border-radius: 12px;
+
+      background: white;
+      color: black;
+
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
 
-  <a-scene
-    webxr="requiredFeatures: local-floor;
-           optionalFeatures: bounded-floor, hand-tracking"
-    background="transparent: true">
+<button id="botaoAR">
+  ENTRAR EM REALIDADE MISTA
+</button>
 
-    <!-- Luz -->
-    <a-light
-      type="ambient"
-      intensity="1.2">
-    </a-light>
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  background="transparent: true"
+  renderer="alpha: true">
 
-    <a-light
-      type="directional"
-      intensity="1"
-      position="1 2 1">
-    </a-light>
+  <!-- iluminação -->
+  <a-light
+    type="ambient"
+    intensity="1.5">
+  </a-light>
 
-    <!-- NOSSO PRIMEIRO OBJETO -->
-    <a-box
-      position="0 1.4 -2"
-      width="0.4"
-      height="0.4"
-      depth="0.4"
-      color="#FF3355"
-      rotation="0 45 0">
-    </a-box>
+  <!-- cubo -->
+  <a-box
+    position="0 1.4 -2"
+    width="0.4"
+    height="0.4"
+    depth="0.4"
+    color="#FF3355">
+  </a-box>
 
-    <!-- Câmera -->
-    <a-camera position="0 1.6 0"></a-camera>
+  <a-camera position="0 1.6 0"></a-camera>
 
-  </a-scene>
+</a-scene>
+
+
+<script>
+
+const botao = document.querySelector("#botaoAR");
+const scene = document.querySelector("a-scene");
+
+botao.addEventListener("click", async () => {
+
+  if (!navigator.xr) {
+    alert("WebXR não está disponível neste navegador.");
+    return;
+  }
+
+  const suportaAR =
+    await navigator.xr.isSessionSupported("immersive-ar");
+
+  if (!suportaAR) {
+    alert("Este dispositivo não informou suporte a immersive-ar.");
+    return;
+  }
+
+  try {
+
+    const session =
+      await navigator.xr.requestSession(
+        "immersive-ar",
+        {
+          requiredFeatures: ["local-floor"]
+        }
+      );
+
+    scene.renderer.xr.setReferenceSpaceType("local-floor");
+
+    await scene.renderer.xr.setSession(session);
+
+    botao.style.display = "none";
+
+    session.addEventListener("end", () => {
+      botao.style.display = "block";
+    });
+
+  } catch (erro) {
+
+    console.error(erro);
+    alert("Não foi possível iniciar a realidade mista.");
+
+  }
+
+});
+
+</script>
 
 </body>
 </html>
