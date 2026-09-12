@@ -23,7 +23,6 @@
     }
 
     #entrada {
-
       position: fixed;
       inset: 0;
 
@@ -73,9 +72,7 @@
 <body>
 
 
-<!-- ================================= -->
-<!-- TELA DE ENTRADA -->
-<!-- ================================= -->
+<!-- TELA INICIAL -->
 
 <div id="entrada">
 
@@ -93,46 +90,21 @@
 
 
 
-<!-- ================================= -->
-<!-- ÁUDIO -->
-<!-- ================================= -->
-
-<audio
-  id="musicaFundo"
-  src="musicas/mixkit-sun-and-his-daughter-580.mp3"
-  loop
-  preload="auto">
-</audio>
-
-
-<audio
-  id="somClique"
-  src="efeitos_sonoros/mixkit-retro-game-notification-212.wav"
-  preload="auto">
-</audio>
-
-
-
-<!-- ================================= -->
-<!-- CENA WEBXR -->
-<!-- ================================= -->
-
 <a-scene
-
   background="color: #000000"
-
   cursor="rayOrigin: mouse"
-
   raycaster="objects: .clicavel"
-
 >
 
 
-  <!-- ================================= -->
-  <!-- THUMBNAILS -->
-  <!-- ================================= -->
+  <!-- ============================= -->
+  <!-- ASSETS -->
+  <!-- ============================= -->
 
-  <a-assets>
+  <a-assets timeout="20000">
+
+
+    <!-- THUMBNAILS -->
 
     <img
       id="thumb1"
@@ -146,60 +118,112 @@
       id="thumb3"
       src="imagens/thumb_3.jpg">
 
+
+
+    <!-- IMAGENS 360 -->
+
+    <img
+      id="img360_1"
+      src="imagens/imagem360_1.jpg">
+
+    <img
+      id="img360_2"
+      src="imagens/imagem360_2.jpg">
+
+    <img
+      id="img360_3"
+      src="imagens/imagem360_3.jpg">
+
+
+
+    <!-- ÁUDIO -->
+
+    <audio
+      id="musica"
+      src="musicas/mixkit-sun-and-his-daughter-580.mp3"
+      preload="auto">
+    </audio>
+
+
+    <audio
+      id="efeito"
+      src="efeitos_sonoros/mixkit-retro-game-notification-212.wav"
+      preload="auto">
+    </audio>
+
+
   </a-assets>
 
 
 
-  <!-- ================================= -->
+  <!-- ============================= -->
+  <!-- MÚSICA AMBIENTE -->
+  <!-- ============================= -->
+
+  <a-entity
+    id="musicaAmbiente"
+
+    sound="
+      src: #musica;
+      autoplay: false;
+      loop: true;
+      positional: false;
+      volume: 0.5">
+  </a-entity>
+
+
+
+  <!-- ============================= -->
+  <!-- EFEITO SONORO -->
+  <!-- ============================= -->
+
+  <a-entity
+    id="efeitoSom"
+
+    sound="
+      src: #efeito;
+      autoplay: false;
+      positional: false;
+      volume: 1">
+  </a-entity>
+
+
+
+  <!-- ============================= -->
   <!-- PANORAMA -->
-  <!-- ================================= -->
+  <!-- ============================= -->
 
   <a-sky
-
     id="panorama"
-
     visible="false"
-
     rotation="0 -90 0">
-
   </a-sky>
 
 
 
-  <!-- ================================= -->
+  <!-- ============================= -->
   <!-- MENU -->
-  <!-- ================================= -->
+  <!-- ============================= -->
 
   <a-entity
-
     id="menu"
-
     position="0 1.6 -2.5"
-
   >
 
 
-    <!-- FUNDO -->
-
     <a-plane
-
       width="3.4"
       height="1.8"
 
       color="#111111"
-
       opacity="0.95"
 
       material="shader: flat">
-
     </a-plane>
 
 
 
-    <!-- TÍTULO -->
-
     <a-text
-
       value="ESCOLHA UMA EXPERIENCIA"
 
       align="center"
@@ -209,17 +233,13 @@
       width="2.8"
 
       position="0 0.65 0.03">
-
     </a-text>
 
 
 
-    <!-- ================================= -->
     <!-- THUMB 1 -->
-    <!-- ================================= -->
 
     <a-plane
-
       id="botao1"
 
       class="clicavel"
@@ -244,17 +264,13 @@
         startEvents: mouseleave;
         dur: 200;
         to: 1 1 1">
-
     </a-plane>
 
 
 
-    <!-- ================================= -->
     <!-- THUMB 2 -->
-    <!-- ================================= -->
 
     <a-plane
-
       id="botao2"
 
       class="clicavel"
@@ -279,17 +295,13 @@
         startEvents: mouseleave;
         dur: 200;
         to: 1 1 1">
-
     </a-plane>
 
 
 
-    <!-- ================================= -->
     <!-- THUMB 3 -->
-    <!-- ================================= -->
 
     <a-plane
-
       id="botao3"
 
       class="clicavel"
@@ -314,7 +326,6 @@
         startEvents: mouseleave;
         dur: 200;
         to: 1 1 1">
-
     </a-plane>
 
 
@@ -322,23 +333,20 @@
 
 
 
-  <!-- ================================= -->
+  <!-- ============================= -->
   <!-- BOTÃO MENU -->
-  <!-- ================================= -->
+  <!-- ============================= -->
 
   <a-entity
-
     id="botaoMenu"
 
     position="0 1.2 -1.5"
 
     visible="false"
-
   >
 
 
     <a-plane
-
       id="voltarMenu"
 
       class="clicavel"
@@ -352,8 +360,8 @@
 
       material="shader: flat">
 
-      <a-text
 
+      <a-text
         value="MENU"
 
         align="center"
@@ -363,8 +371,8 @@
         width="0.7"
 
         position="0 0 0.01">
-
       </a-text>
+
 
     </a-plane>
 
@@ -373,14 +381,12 @@
 
 
 
-  <!-- ================================= -->
+  <!-- ============================= -->
   <!-- CÂMERA -->
-  <!-- ================================= -->
+  <!-- ============================= -->
 
   <a-camera>
 
-
-    <!-- CURSOR POR OLHAR -->
 
     <a-cursor
 
@@ -429,11 +435,6 @@
 <script>
 
 
-  /* ================================= */
-  /* ELEMENTOS */
-  /* ================================= */
-
-
   const entrada =
     document.querySelector("#entrada");
 
@@ -470,91 +471,63 @@
     document.querySelector("#botao3");
 
 
-  const musicaFundo =
-    document.querySelector("#musicaFundo");
+  const musicaAmbiente =
+    document.querySelector("#musicaAmbiente");
 
 
-  const somClique =
-    document.querySelector("#somClique");
+  const efeitoSom =
+    document.querySelector("#efeitoSom");
 
 
 
-  /* ================================= */
+  /* ============================= */
   /* ENTRAR */
-  /* ================================= */
+  /* ============================= */
 
   entrar.addEventListener(
-
     "click",
-
     function () {
-
 
       entrada.style.display = "none";
 
 
-      /* VOLUME DA MÚSICA */
+      /*
+      INICIA A MÚSICA
+      */
 
-      musicaFundo.volume = 0.35;
-
-
-      /* COMEÇA A MÚSICA */
-
-      musicaFundo.play()
-        .catch(function (erro) {
-
-          console.log(
-            "O navegador bloqueou o áudio:",
-            erro
-          );
-
-        });
-
+      musicaAmbiente.components.sound.playSound();
 
     }
-
   );
 
 
 
-  /* ================================= */
-  /* SOM DE SELEÇÃO */
-  /* ================================= */
+  /* ============================= */
+  /* SOM */
+  /* ============================= */
 
-  function tocarSomClique() {
+  function tocarSom() {
 
+    efeitoSom.components.sound.stopSound();
 
-    somClique.currentTime = 0;
-
-
-    somClique.play()
-      .catch(function (erro) {
-
-        console.log(
-          "Erro no efeito sonoro:",
-          erro
-        );
-
-      });
-
+    efeitoSom.components.sound.playSound();
 
   }
 
 
 
-  /* ================================= */
-  /* ABRIR PANORAMA */
-  /* ================================= */
+  /* ============================= */
+  /* ABRIR IMAGEM */
+  /* ============================= */
 
-  function abrirImagem(endereco) {
+  function abrirImagem(asset) {
 
-
-    tocarSomClique();
+    tocarSom();
 
 
     panorama.setAttribute(
       "src",
-      endereco
+      asset
     );
 
 
@@ -575,89 +548,64 @@
       "true"
     );
 
-
   }
 
 
 
-  /* ================================= */
-  /* THUMB 1 */
-  /* ================================= */
+  /* ============================= */
+  /* IMAGEM 1 */
+  /* ============================= */
 
   botao1.addEventListener(
-
     "click",
-
     function () {
 
-
-      abrirImagem(
-        "imagens/imagem360_1.jpg"
-      );
-
+      abrirImagem("#img360_1");
 
     }
-
   );
 
 
 
-  /* ================================= */
-  /* THUMB 2 */
-  /* ================================= */
+  /* ============================= */
+  /* IMAGEM 2 */
+  /* ============================= */
 
   botao2.addEventListener(
-
     "click",
-
     function () {
 
-
-      abrirImagem(
-        "imagens/imagem360_2.jpg"
-      );
-
+      abrirImagem("#img360_2");
 
     }
-
   );
 
 
 
-  /* ================================= */
-  /* THUMB 3 */
-  /* ================================= */
+  /* ============================= */
+  /* IMAGEM 3 */
+  /* ============================= */
 
   botao3.addEventListener(
-
     "click",
-
     function () {
 
-
-      abrirImagem(
-        "imagens/imagem360_3.jpg"
-      );
-
+      abrirImagem("#img360_3");
 
     }
-
   );
 
 
 
-  /* ================================= */
+  /* ============================= */
   /* VOLTAR AO MENU */
-  /* ================================= */
+  /* ============================= */
 
   voltarMenu.addEventListener(
-
     "click",
-
     function () {
 
-
-      tocarSomClique();
+      tocarSom();
 
 
       panorama.setAttribute(
@@ -677,9 +625,7 @@
         "false"
       );
 
-
     }
-
   );
 
 
