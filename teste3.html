@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -10,7 +9,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Teste WebXR - Menu 360</title>
+  <title>Teste WebXR - Menu</title>
 
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
 
@@ -23,7 +22,6 @@
     }
 
     #entrada {
-
       position: fixed;
       inset: 0;
 
@@ -50,7 +48,6 @@
     }
 
     #entrar {
-
       padding: 16px 32px;
 
       border: none;
@@ -80,7 +77,7 @@
   <h1>Experiência WebXR</h1>
 
   <p>
-    Entre no ambiente para escolher uma experiência.
+    Entre no ambiente para escolher uma imagem.
   </p>
 
   <button id="entrar">
@@ -91,7 +88,7 @@
 
 
 
-<!-- CENA -->
+<!-- CENA WEBXR -->
 
 <a-scene
   background="color: #000000"
@@ -101,7 +98,6 @@
 
 
   <!-- PANORAMA -->
-  <!-- COMEÇA INVISÍVEL -->
 
   <a-sky
     id="panorama"
@@ -112,18 +108,17 @@
 
 
 
-  <!-- MENU FLUTUANTE -->
+  <!-- MENU PRINCIPAL -->
 
   <a-entity
     id="menu"
-    position="0 1.6 -2.2"
+    position="0 1.6 -2"
   >
 
 
-    <!-- FUNDO DO MENU -->
+    <!-- FUNDO -->
 
     <a-plane
-
       width="1.8"
       height="1.1"
 
@@ -131,9 +126,7 @@
 
       opacity="0.95"
 
-      material="shader: flat"
-
-    >
+      material="shader: flat">
     </a-plane>
 
 
@@ -141,8 +134,7 @@
     <!-- TÍTULO -->
 
     <a-text
-
-      value="Escolha uma experiencia"
+      value="Escolha uma imagem"
 
       align="center"
 
@@ -150,9 +142,7 @@
 
       color="#FFFFFF"
 
-      position="0 0.30 0.02"
-
-    >
+      position="0 0.30 0.02">
     </a-text>
 
 
@@ -160,7 +150,6 @@
     <!-- BOTÃO IMAGEM 1 -->
 
     <a-plane
-
       id="imagem1"
 
       class="clicavel"
@@ -173,11 +162,10 @@
       color="#FFFFFF"
 
       material="shader: flat"
-
     >
 
-      <a-text
 
+      <a-text
         value="IMAGEM 1"
 
         align="center"
@@ -186,10 +174,9 @@
 
         width="1.1"
 
-        position="0 0 0.01"
-
-      >
+        position="0 0 0.01">
       </a-text>
+
 
     </a-plane>
 
@@ -198,7 +185,52 @@
 
 
 
-  <!-- CAMERA -->
+  <!-- BOTÃO MENU -->
+
+  <a-entity
+    id="botaoMenu"
+    position="0 1.2 -1.5"
+    visible="false"
+  >
+
+
+    <a-plane
+      id="voltarMenu"
+
+      class="clicavel"
+
+      width="0.65"
+      height="0.25"
+
+      color="#111111"
+
+      opacity="0.9"
+
+      material="shader: flat"
+    >
+
+
+      <a-text
+        value="MENU"
+
+        align="center"
+
+        color="#FFFFFF"
+
+        width="0.6"
+
+        position="0 0 0.01">
+      </a-text>
+
+
+    </a-plane>
+
+
+  </a-entity>
+
+
+
+  <!-- CÂMERA -->
 
   <a-entity
     id="rig"
@@ -207,26 +239,30 @@
 
     <a-camera>
 
-      <!-- CURSOR PARA COMPUTADOR / VISUALIZAÇÃO -->
 
       <a-cursor
         fuse="false"
-        raycaster="objects: .clicavel"
-      >
+        raycaster="objects: .clicavel">
       </a-cursor>
 
+
     </a-camera>
+
 
   </a-entity>
 
 
 
-  <!-- CONTROLES QUEST -->
+  <!-- CONTROLE DIREITO -->
 
   <a-entity
     laser-controls="hand: right"
     raycaster="objects: .clicavel">
   </a-entity>
+
+
+
+  <!-- CONTROLE ESQUERDO -->
 
   <a-entity
     laser-controls="hand: left"
@@ -240,41 +276,104 @@
 
 <script>
 
-  const entrada = document.querySelector("#entrada");
 
-  const botaoEntrar = document.querySelector("#entrar");
+  const entrada =
+    document.querySelector("#entrada");
 
-  const botaoImagem1 = document.querySelector("#imagem1");
 
-  const panorama = document.querySelector("#panorama");
+  const botaoEntrar =
+    document.querySelector("#entrar");
 
-  const menu = document.querySelector("#menu");
+
+  const botaoImagem1 =
+    document.querySelector("#imagem1");
+
+
+  const panorama =
+    document.querySelector("#panorama");
+
+
+  const menu =
+    document.querySelector("#menu");
+
+
+  const botaoMenu =
+    document.querySelector("#botaoMenu");
+
+
+  const voltarMenu =
+    document.querySelector("#voltarMenu");
 
 
 
   /*
-  ENTRAR NO AMBIENTE
+  ENTRAR
   */
 
-  botaoEntrar.addEventListener("click", function () {
+  botaoEntrar.addEventListener(
+    "click",
+    function () {
 
-    entrada.style.display = "none";
+      entrada.style.display = "none";
 
-  });
+    }
+  );
 
 
 
   /*
-  CLICAR EM IMAGEM 1
+  ABRIR IMAGEM
   */
 
-  botaoImagem1.addEventListener("click", function () {
+  botaoImagem1.addEventListener(
+    "click",
+    function () {
 
-    panorama.setAttribute("visible", "true");
+      panorama.setAttribute(
+        "visible",
+        "true"
+      );
 
-    menu.setAttribute("visible", "false");
+      menu.setAttribute(
+        "visible",
+        "false"
+      );
 
-  });
+      botaoMenu.setAttribute(
+        "visible",
+        "true"
+      );
+
+    }
+  );
+
+
+
+  /*
+  VOLTAR AO MENU
+  */
+
+  voltarMenu.addEventListener(
+    "click",
+    function () {
+
+      panorama.setAttribute(
+        "visible",
+        "false"
+      );
+
+      menu.setAttribute(
+        "visible",
+        "true"
+      );
+
+      botaoMenu.setAttribute(
+        "visible",
+        "false"
+      );
+
+    }
+  );
 
 
 </script>
