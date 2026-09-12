@@ -22,10 +22,7 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    /* TELA INICIAL */
-
     #entrada {
-
       position: fixed;
       inset: 0;
 
@@ -52,7 +49,6 @@
     }
 
     #entrar {
-
       padding: 16px 32px;
 
       border: none;
@@ -75,9 +71,7 @@
 <body>
 
 
-<!-- =============================== -->
 <!-- TELA INICIAL -->
-<!-- =============================== -->
 
 <div id="entrada">
 
@@ -95,63 +89,41 @@
 
 
 
-<!-- =============================== -->
 <!-- CENA WEBXR -->
-<!-- =============================== -->
 
 <a-scene
-
   background="color: #000000"
-
   cursor="rayOrigin: mouse"
-
   raycaster="objects: .clicavel"
-
 >
 
 
-  <!-- =============================== -->
   <!-- PANORAMA -->
-  <!-- =============================== -->
 
   <a-sky
-
     id="panorama"
-
     visible="false"
-
     rotation="0 -90 0">
-
   </a-sky>
 
 
 
-  <!-- =============================== -->
   <!-- MENU PRINCIPAL -->
-  <!-- =============================== -->
 
   <a-entity
-
     id="menu"
-
     position="0 1.6 -2"
-
   >
 
 
     <!-- FUNDO -->
 
     <a-plane
-
       width="2"
       height="1.6"
-
       color="#111111"
-
       opacity="0.95"
-
       material="shader: flat">
-
     </a-plane>
 
 
@@ -159,126 +131,81 @@
     <!-- TÍTULO -->
 
     <a-text
-
       value="ESCOLHA UMA IMAGEM"
-
       align="center"
-
       color="#FFFFFF"
-
       width="1.8"
-
       position="0 0.55 0.02">
-
     </a-text>
 
 
 
-    <!-- =============================== -->
     <!-- IMAGEM 1 -->
-    <!-- =============================== -->
 
     <a-plane
-
       id="botao1"
-
       class="clicavel"
-
       width="1.4"
       height="0.30"
-
       position="0 0.15 0.03"
-
       color="#FFFFFF"
-
-      material="shader: flat">
+      material="shader: flat"
+    >
 
       <a-text
-
         value="IMAGEM 1"
-
         align="center"
-
         color="#000000"
-
         width="1.2"
-
         position="0 0 0.01">
-
       </a-text>
 
     </a-plane>
 
 
 
-    <!-- =============================== -->
     <!-- IMAGEM 2 -->
-    <!-- =============================== -->
 
     <a-plane
-
       id="botao2"
-
       class="clicavel"
-
       width="1.4"
       height="0.30"
-
       position="0 -0.20 0.03"
-
       color="#FFFFFF"
-
-      material="shader: flat">
+      material="shader: flat"
+    >
 
       <a-text
-
         value="IMAGEM 2"
-
         align="center"
-
         color="#000000"
-
         width="1.2"
-
         position="0 0 0.01">
-
       </a-text>
 
     </a-plane>
 
 
 
-    <!-- =============================== -->
     <!-- IMAGEM 3 -->
-    <!-- =============================== -->
 
     <a-plane
-
       id="botao3"
-
       class="clicavel"
-
       width="1.4"
       height="0.30"
-
       position="0 -0.55 0.03"
-
       color="#FFFFFF"
-
-      material="shader: flat">
+      material="shader: flat"
+    >
 
       <a-text
-
         value="IMAGEM 3"
-
         align="center"
-
         color="#000000"
-
         width="1.2"
-
         position="0 0 0.01">
-
       </a-text>
 
     </a-plane>
@@ -288,48 +215,31 @@
 
 
 
-  <!-- =============================== -->
-  <!-- BOTÃO VOLTAR AO MENU -->
-  <!-- =============================== -->
+  <!-- BOTÃO MENU -->
 
   <a-entity
-
     id="botaoMenu"
-
-    position="0 1.25 -1.5"
-
+    position="0 1.2 -1.5"
     visible="false"
-
   >
 
 
     <a-plane
-
       id="voltarMenu"
-
       class="clicavel"
-
       width="0.8"
       height="0.28"
-
       color="#111111"
-
       opacity="0.9"
-
-      material="shader: flat">
+      material="shader: flat"
+    >
 
       <a-text
-
         value="MENU"
-
         align="center"
-
         color="#FFFFFF"
-
         width="0.7"
-
         position="0 0 0.01">
-
       </a-text>
 
     </a-plane>
@@ -339,22 +249,46 @@
 
 
 
-  <!-- =============================== -->
   <!-- CÂMERA -->
-  <!-- =============================== -->
 
   <a-camera>
 
 
-    <!-- CURSOR CENTRAL -->
+    <!-- CURSOR COM SELEÇÃO POR OLHAR -->
 
     <a-cursor
 
-      fuse="false"
+      fuse="true"
+
+      fuse-timeout="3000"
 
       color="#FFFFFF"
 
-      raycaster="objects: .clicavel">
+      raycaster="objects: .clicavel"
+
+
+      animation__fusing="
+        property: scale;
+        startEvents: fusing;
+        easing: easeInCubic;
+        dur: 3000;
+        from: 1 1 1;
+        to: 0.2 0.2 0.2"
+
+
+      animation__mouseleave="
+        property: scale;
+        startEvents: mouseleave;
+        dur: 200;
+        to: 1 1 1"
+
+
+      animation__click="
+        property: scale;
+        startEvents: click;
+        dur: 150;
+        from: 0.2 0.2 0.2;
+        to: 1 1 1">
 
     </a-cursor>
 
@@ -369,40 +303,44 @@
 <script>
 
 
-  /* ELEMENTOS */
-
   const entrada =
     document.querySelector("#entrada");
+
 
   const entrar =
     document.querySelector("#entrar");
 
+
   const panorama =
     document.querySelector("#panorama");
+
 
   const menu =
     document.querySelector("#menu");
 
+
   const botaoMenu =
     document.querySelector("#botaoMenu");
+
 
   const voltarMenu =
     document.querySelector("#voltarMenu");
 
+
   const botao1 =
     document.querySelector("#botao1");
 
+
   const botao2 =
     document.querySelector("#botao2");
+
 
   const botao3 =
     document.querySelector("#botao3");
 
 
 
-  /* =============================== */
   /* ENTRAR */
-  /* =============================== */
 
   entrar.addEventListener(
     "click",
@@ -415,9 +353,7 @@
 
 
 
-  /* =============================== */
-  /* FUNÇÃO PARA ABRIR PANORAMA */
-  /* =============================== */
+  /* FUNÇÃO PARA ABRIR IMAGEM */
 
   function abrirImagem(endereco) {
 
@@ -445,9 +381,7 @@
 
 
 
-  /* =============================== */
   /* IMAGEM 1 */
-  /* =============================== */
 
   botao1.addEventListener(
     "click",
@@ -462,9 +396,7 @@
 
 
 
-  /* =============================== */
   /* IMAGEM 2 */
-  /* =============================== */
 
   botao2.addEventListener(
     "click",
@@ -479,9 +411,7 @@
 
 
 
-  /* =============================== */
   /* IMAGEM 3 */
-  /* =============================== */
 
   botao3.addEventListener(
     "click",
@@ -496,9 +426,7 @@
 
 
 
-  /* =============================== */
   /* VOLTAR PARA O MENU */
-  /* =============================== */
 
   voltarMenu.addEventListener(
     "click",
