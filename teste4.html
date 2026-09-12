@@ -177,7 +177,7 @@
 
   <!-- =============================== -->
   <!-- MENU -->
-  <!-- 25% MENOR -->
+  <!-- MENU COMPACTO -->
   <!-- =============================== -->
 
   <a-entity
@@ -193,66 +193,18 @@
 
     <!-- =============================== -->
     <!-- FUNDO -->
-    <!-- CINZA CLARO 50% -->
+    <!-- CINZA CLARO 50% / FUNDO RETO -->
     <!-- =============================== -->
-
-
-    <!-- CENTRO -->
-
+    <!-- FUNDO RETO, SEM CANTOS ARREDONDADOS -->
     <a-plane
-
-      width="1.35"
-
+      width="1.90"
       height="0.55"
-
       color="#BDBDBD"
-
       opacity="0.5"
-
       material="
         shader: flat;
         transparent: true">
-
     </a-plane>
-
-
-    <!-- EXTREMIDADE ESQUERDA -->
-
-    <a-circle
-
-      radius="0.275"
-
-      position="-0.675 0 0"
-
-      color="#BDBDBD"
-
-      opacity="0.5"
-
-      material="
-        shader: flat;
-        transparent: true">
-
-    </a-circle>
-
-
-    <!-- EXTREMIDADE DIREITA -->
-
-    <a-circle
-
-      radius="0.275"
-
-      position="0.675 0 0"
-
-      color="#BDBDBD"
-
-      opacity="0.5"
-
-      material="
-        shader: flat;
-        transparent: true">
-
-    </a-circle>
-
 
 
     <!-- =============================== -->
@@ -659,147 +611,48 @@ function enderecoImagem(numero) {
 }
 
 
-
 /* ===================================== */
-/* CAMINHO AUTOMÁTICO DO XML */
+/* DESCOBRE AUTOMATICAMENTE A ÚLTIMA     */
+/* IMAGEM DA SEQUÊNCIA                   */
 /* ===================================== */
 
-function enderecoXML(numero) {
+function imagemExiste(numero) {
 
-  return (
-    "imagens/imagem360_" +
-    numero +
-    ".xml"
-  );
+  return new Promise(function(resolve) {
+
+    const teste = new Image();
+
+    teste.onload = function() {
+      resolve(true);
+    };
+
+    teste.onerror = function() {
+      resolve(false);
+    };
+
+    teste.src = enderecoImagem(numero);
+
+  });
 
 }
 
 
-
 /* ===================================== */
-/* CARREGAR XML */
+/* ENCONTRA A ÚLTIMA IMAGEM              */
 /* ===================================== */
 
-async function carregarXML(numero) {
+async function descobrirUltimaImagem() {
 
+  let numero = 1;
 
-  const endereco =
-    enderecoXML(numero);
-
-
-  try {
-
-
-    const resposta =
-      await fetch(endereco);
-
-
-    /*
-    XML NÃO EXISTE?
-
-    SEM PROBLEMA.
-
-    A GALERIA CONTINUA NORMAL.
-    */
-
-    if (!resposta.ok) {
-
-      console.log(
-        "XML não encontrado:",
-        endereco
-      );
-
-      return;
-
-    }
-
-
-    const texto =
-      await resposta.text();
-
-
-    const parser =
-      new DOMParser();
-
-
-    const xml =
-      parser.parseFromString(
-        texto,
-        "application/xml"
-      );
-
-
-
-    /* ================================= */
-    /* EXEMPLOS DE DADOS */
-    /* ================================= */
-
-
-    const titulo =
-      xml.querySelector("titulo")
-      ?.textContent;
-
-
-    const descricao =
-      xml.querySelector("descricao")
-      ?.textContent;
-
-
-    const autor =
-      xml.querySelector("autor")
-      ?.textContent;
-
-
-    const ano =
-      xml.querySelector("ano")
-      ?.textContent;
-
-
-
-    console.log(
-      "XML DA IMAGEM:",
-      numero
-    );
-
-
-    console.log(
-      "Título:",
-      titulo
-    );
-
-
-    console.log(
-      "Descrição:",
-      descricao
-    );
-
-
-    console.log(
-      "Autor:",
-      autor
-    );
-
-
-    console.log(
-      "Ano:",
-      ano
-    );
-
-
+  while (await imagemExiste(numero)) {
+    numero++;
   }
 
-
-  catch (erro) {
-
-
-    console.log(
-      "Nenhum XML para esta imagem."
-    );
-
-
-  }
+  return numero - 1;
 
 }
+
 
 
 
@@ -982,16 +835,6 @@ function carregarImagem(numero) {
 
 
 
-          /* ============================ */
-          /* CARREGA XML DA MESMA IMAGEM */
-          /* ============================ */
-
-          carregarXML(
-            numero
-          );
-
-
-
           setTimeout(
 
             function () {
@@ -1044,20 +887,36 @@ function carregarImagem(numero) {
 
 
 /* ===================================== */
-/* PRÓXIMA */
+/* PRÓXIMA - NAVEGAÇÃO INFINITA */
 /* ===================================== */
 
 proxima.addEventListener(
 
   "click",
 
-  function () {
+  async function () {
 
+    if (trocando) {
+      return;
+    }
 
-    carregarImagem(
-      imagemAtual + 1
-    );
+    const proximoNumero =
+      imagemAtual + 1;
 
+    const existe =
+      await imagemExiste(proximoNumero);
+
+    if (existe) {
+
+      carregarImagem(
+        proximoNumero
+      );
+
+    } else {
+
+      carregarImagem(1);
+
+    }
 
   }
 
@@ -1066,20 +925,36 @@ proxima.addEventListener(
 
 
 /* ===================================== */
-/* ANTERIOR */
+/* ANTERIOR - NAVEGAÇÃO INFINITA */
+/* ===================================== */
 /* ===================================== */
 
 anterior.addEventListener(
 
   "click",
 
-  function () {
+  async function () {
 
+    if (trocando) {
+      return;
+    }
 
-    carregarImagem(
-      imagemAtual - 1
-    );
+    if (imagemAtual > 1) {
 
+      carregarImagem(
+        imagemAtual - 1
+      );
+
+    } else {
+
+      const ultimaImagem =
+        await descobrirUltimaImagem();
+
+      carregarImagem(
+        ultimaImagem
+      );
+
+    }
 
   }
 
@@ -1121,15 +996,6 @@ entrar.addEventListener(
         );
 
       });
-
-
-    /*
-    CARREGA TAMBÉM
-    O XML DA IMAGEM 1
-    */
-
-
-    carregarXML(1);
 
 
   }
