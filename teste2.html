@@ -132,16 +132,19 @@
 
 <a-scene>
 
+  <!-- ASSETS -->
+
   <a-assets>
 
     <img
       id="imagem360"
-      src="https://raw.githubusercontent.com/hugotockaes/webxr-teste/main/imagens/imagem360.jpg"
-      crossorigin="anonymous"
+      src="imagens/imagem360.jpg"
     >
 
   </a-assets>
 
+
+  <!-- PANORAMA 360 -->
 
   <a-sky
     src="#imagem360"
@@ -149,7 +152,11 @@
   </a-sky>
 
 
-  <a-camera></a-camera>
+  <!-- CÂMERA -->
+
+  <a-camera>
+  </a-camera>
+
 
 </a-scene>
 
@@ -157,18 +164,28 @@
 
 <script>
 
+  /*
+  ELEMENTOS DA PÁGINA
+  */
+
   const imagem = document.querySelector("#imagem360");
 
   const loading = document.querySelector("#loading");
+
   const status = document.querySelector("#status");
 
   const botao = document.querySelector("#entrar");
+
   const entrada = document.querySelector("#entrada");
 
 
-  /* QUANDO A IMAGEM TERMINAR DE CARREGAR */
+  /*
+  FUNÇÃO: IMAGEM CARREGADA
+  */
 
-  imagem.addEventListener("load", function () {
+  function imagemPronta() {
+
+    console.log("Imagem 360 carregada!");
 
     loading.style.display = "none";
 
@@ -176,16 +193,66 @@
 
     botao.style.display = "block";
 
-  });
+  }
 
 
-  /* BOTÃO ENTRAR */
+  /*
+  FUNÇÃO: ERRO
+  */
 
-  botao.addEventListener("click", function () {
+  function erroImagem() {
 
-    entrada.style.display = "none";
+    console.log("Erro ao carregar imagem.");
 
-  });
+    loading.style.display = "none";
+
+    status.innerHTML =
+      "Erro ao carregar a imagem 360°.";
+
+  }
+
+
+  /*
+  VERIFICA SE A IMAGEM
+  JÁ ESTAVA CARREGADA
+  */
+
+  if (
+    imagem.complete &&
+    imagem.naturalWidth > 0
+  ) {
+
+    imagemPronta();
+
+  }
+
+  else {
+
+    imagem.addEventListener(
+      "load",
+      imagemPronta
+    );
+
+    imagem.addEventListener(
+      "error",
+      erroImagem
+    );
+
+  }
+
+
+  /*
+  BOTÃO ENTRAR
+  */
+
+  botao.addEventListener(
+    "click",
+    function () {
+
+      entrada.style.display = "none";
+
+    }
+  );
 
 
 </script>
