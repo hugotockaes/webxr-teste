@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Galeria 360 Infinita</title>
+
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+
+  <style>
+
+    body {
+      margin: 0;
+      background: black;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* TELA INICIAL */
+
+    #entrada {
+
+      position: fixed;
+      inset: 0;
+
+      display: flex;
+      flex-direction: column;
+
+      align-items: center;
+      justify-content: center;
+
+      background: black;
+      color: white;
+
+      z-index: 20;
+    }
+
+    #entrada h1 {
+      font-size: 34px;
+      margin-bottom: 10px;
+    }
+
+    #entrada p {
+      color: #aaa;
+      margin-bottom: 30px;
+    }
+
+    #entrar {
+
+      padding: 16px 32px;
+
+      border: none;
+      border-radius: 10px;
+
+      font-size: 18px;
+      font-weight: bold;
+
+      cursor: pointer;
+
+      background: white;
+      color: black;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================================= -->
+<!-- TELA DE ENTRADA -->
+<!-- ================================= -->
+
+<div id="entrada">
+
+  <h1>Experiência WebXR</h1>
+
+  <p>
+    Entre para explorar a galeria 360°
+  </p>
+
+  <button id="entrar">
+    ENTRAR
+  </button>
+
+</div>
+
+
+
+<!-- ================================= -->
+<!-- CENA -->
+<!-- ================================= -->
+
+<a-scene
+
+  background="color: #700000"
+
+  cursor="rayOrigin: mouse"
+
+  raycaster="objects: .clicavel"
+
+>
+
+
+  <!-- ================================= -->
+  <!-- PANORAMA -->
+  <!-- ================================= -->
+
+  <a-sky
+
+    id="panorama"
+
+    color="#700000"
+
+    rotation="0 -90 0">
+
+  </a-sky>
+
+
+
+  <!-- ================================= -->
+  <!-- MENU -->
+  <!-- ================================= -->
+
+  <a-entity
+
+    id="menu"
+
+    position="0 1.3 -1.8"
+
+  >
+
+
+    <!-- FUNDO -->
+
+    <a-plane
+
+      width="2.6"
+      height="0.75"
+
+      color="#160000"
+
+      opacity="0.90"
+
+      material="
+        shader: flat;
+        transparent: true">
+
+    </a-plane>
+
+
+
+    <!-- ANTERIOR -->
+
+    <a-plane
+
+      id="anterior"
+
+      class="clicavel"
+
+      width="1"
+      height="0.38"
+
+      position="-0.58 0 0.03"
+
+      color="#FFFFFF"
+
+      material="shader: flat"
+
+      animation__mouseenter="
+        property: scale;
+        startEvents: mouseenter;
+        dur: 200;
+        to: 1.10 1.10 1.10"
+
+      animation__mouseleave="
+        property: scale;
+        startEvents: mouseleave;
+        dur: 200;
+        to: 1 1 1">
+
+      <a-text
+
+        value="< ANTERIOR"
+
+        align="center"
+
+        color="#500000"
+
+        width="0.9"
+
+        position="0 0 0.01">
+
+      </a-text>
+
+    </a-plane>
+
+
+
+    <!-- PRÓXIMA -->
+
+    <a-plane
+
+      id="proxima"
+
+      class="clicavel"
+
+      width="1"
+      height="0.38"
+
+      position="0.58 0 0.03"
+
+      color="#FFFFFF"
+
+      material="shader: flat"
+
+      animation__mouseenter="
+        property: scale;
+        startEvents: mouseenter;
+        dur: 200;
+        to: 1.10 1.10 1.10"
+
+      animation__mouseleave="
+        property: scale;
+        startEvents: mouseleave;
+        dur: 200;
+        to: 1 1 1">
+
+      <a-text
+
+        value="PROXIMA >"
+
+        align="center"
+
+        color="#500000"
+
+        width="0.9"
+
+        position="0 0 0.01">
+
+      </a-text>
+
+    </a-plane>
+
+
+  </a-entity>
+
+
+
+  <!-- ================================= -->
+  <!-- CÂMERA -->
+  <!-- ================================= -->
+
+  <a-camera id="camera">
+
+
+    <!-- CURSOR PELO OLHAR -->
+
+    <a-cursor
+
+      fuse="true"
+
+      fuse-timeout="2000"
+
+      color="#FFFFFF"
+
+      raycaster="objects: .clicavel"
+
+      animation__fusing="
+        property: scale;
+        startEvents: fusing;
+        easing: easeInCubic;
+        dur: 2000;
+        from: 1 1 1;
+        to: 0.2 0.2 0.2"
+
+      animation__mouseleave="
+        property: scale;
+        startEvents: mouseleave;
+        dur: 200;
+        to: 1 1 1"
+
+      animation__click="
+        property: scale;
+        startEvents: click;
+        dur: 150;
+        from: 0.2 0.2 0.2;
+        to: 1 1 1">
+
+    </a-cursor>
+
+
+
+    <!-- ================================= -->
+    <!-- TELA DE TRANSIÇÃO VERMELHA -->
+    <!-- ================================= -->
+
+    <a-plane
+
+      id="fade"
+
+      position="0 0 -0.5"
+
+      width="5"
+      height="5"
+
+      color="#700000"
+
+      material="
+        shader: flat;
+        transparent: true;
+        opacity: 0"
+
+      visible="true">
+
+    </a-plane>
+
+
+  </a-camera>
+
+
+</a-scene>
+
+
+
+<script>
+
+
+  /* ================================= */
+  /* ELEMENTOS */
+  /* ================================= */
+
+  const entrada =
+    document.querySelector("#entrada");
+
+  const entrar =
+    document.querySelector("#entrar");
+
+  const panorama =
+    document.querySelector("#panorama");
+
+  const proxima =
+    document.querySelector("#proxima");
+
+  const anterior =
+    document.querySelector("#anterior");
+
+  const fade =
+    document.querySelector("#fade");
+
+
+
+  /* ================================= */
+  /* CONTROLE DA IMAGEM ATUAL */
+  /* ================================= */
+
+  let imagemAtual = 1;
+
+  let trocando = false;
+
+
+
+  /* ================================= */
+  /* ENDEREÇO AUTOMÁTICO */
+  /* ================================= */
+
+  function enderecoImagem(numero) {
+
+    return "imagens/imagem360_" +
+      numero +
+      ".jpg";
+
+  }
+
+
+
+  /* ================================= */
+  /* FADE */
+  /* ================================= */
+
+  function definirFade(opacidade) {
+
+    fade.setAttribute(
+      "material",
+      "shader: flat; transparent: true; opacity: " +
+      opacidade
+    );
+
+  }
+
+
+
+  function fadeIn(callback) {
+
+    let opacidade = 0;
+
+    const intervalo = setInterval(
+      function () {
+
+        opacidade += 0.08;
+
+        if (opacidade >= 1) {
+
+          opacidade = 1;
+
+          definirFade(opacidade);
+
+          clearInterval(intervalo);
+
+          callback();
+
+          return;
+
+        }
+
+        definirFade(opacidade);
+
+      },
+
+      30
+
+    );
+
+  }
+
+
+
+  function fadeOut() {
+
+    let opacidade = 1;
+
+    const intervalo = setInterval(
+      function () {
+
+        opacidade -= 0.08;
+
+        if (opacidade <= 0) {
+
+          opacidade = 0;
+
+          definirFade(opacidade);
+
+          clearInterval(intervalo);
+
+          trocando = false;
+
+          return;
+
+        }
+
+        definirFade(opacidade);
+
+      },
+
+      30
+
+    );
+
+  }
+
+
+
+  /* ================================= */
+  /* CARREGAR PANORAMA */
+  /* ================================= */
+
+  function carregarImagem(numero) {
+
+
+    if (trocando) {
+      return;
+    }
+
+
+    const endereco =
+      enderecoImagem(numero);
+
+
+    /*
+    CRIA UMA IMAGEM TEMPORÁRIA
+    PARA VERIFICAR SE O ARQUIVO EXISTE
+    */
+
+    const teste =
+      new Image();
+
+
+    teste.onload =
+      function () {
+
+
+        trocando = true;
+
+
+        fadeIn(
+          function () {
+
+
+            panorama.setAttribute(
+              "src",
+              endereco
+            );
+
+
+            imagemAtual = numero;
+
+
+            /*
+            PEQUENA PAUSA PARA A TEXTURA
+            ENTRAR NO A-FRAME
+            */
+
+            setTimeout(
+              function () {
+
+                fadeOut();
+
+              },
+
+              350
+            );
+
+
+          }
+        );
+
+
+      };
+
+
+    teste.onerror =
+      function () {
+
+
+        console.log(
+          "Imagem não encontrada:",
+          endereco
+        );
+
+
+      };
+
+
+    teste.src =
+      endereco;
+
+
+  }
+
+
+
+  /* ================================= */
+  /* PRÓXIMA */
+  /* ================================= */
+
+  proxima.addEventListener(
+    "click",
+    function () {
+
+
+      carregarImagem(
+        imagemAtual + 1
+      );
+
+
+    }
+  );
+
+
+
+  /* ================================= */
+  /* ANTERIOR */
+  /* ================================= */
+
+  anterior.addEventListener(
+    "click",
+    function () {
+
+
+      if (imagemAtual <= 1) {
+
+        return;
+
+      }
+
+
+      carregarImagem(
+        imagemAtual - 1
+      );
+
+
+    }
+  );
+
+
+
+  /* ================================= */
+  /* ENTRAR */
+  /* ================================= */
+
+  entrar.addEventListener(
+    "click",
+    function () {
+
+
+      entrada.style.display =
+        "none";
+
+
+      carregarImagem(1);
+
+
+    }
+  );
+
+
+</script>
+
+
+</body>
+
+</html>
