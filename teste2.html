@@ -22,6 +22,8 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
+    /* TELA DE ENTRADA */
+
     #entrada {
       position: fixed;
       inset: 0;
@@ -43,12 +45,44 @@
       margin-bottom: 10px;
     }
 
-    #entrada p {
+    #status {
       color: #aaa;
       margin-bottom: 30px;
     }
 
+    /* LOADING */
+
+    #loading {
+      width: 40px;
+      height: 40px;
+
+      border: 4px solid #333;
+      border-top: 4px solid white;
+
+      border-radius: 50%;
+
+      animation: girar 1s linear infinite;
+
+      margin-bottom: 25px;
+    }
+
+    @keyframes girar {
+
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+
+    }
+
+    /* BOTÃO */
+
     #entrar {
+      display: none;
+
       padding: 16px 32px;
 
       font-size: 18px;
@@ -80,8 +114,10 @@
 
   <h1>Experiência 360°</h1>
 
-  <p>
-    Explore o ambiente em 360 graus.
+  <div id="loading"></div>
+
+  <p id="status">
+    Carregando imagem 360°...
   </p>
 
   <button id="entrar">
@@ -96,26 +132,61 @@
 
 <a-scene>
 
- <a-sky
-    src="https://raw.githubusercontent.com/hugotockaes/webxr-teste/main/imagens/imagem360.jpg"
+  <a-assets>
+
+    <img
+      id="imagem360"
+      src="https://raw.githubusercontent.com/hugotockaes/webxr-teste/main/imagens/imagem360.jpg"
+      crossorigin="anonymous"
+    >
+
+  </a-assets>
+
+
+  <a-sky
+    src="#imagem360"
     rotation="0 -90 0">
   </a-sky>
+
 
   <a-camera></a-camera>
 
 </a-scene>
 
 
+
 <script>
+
+  const imagem = document.querySelector("#imagem360");
+
+  const loading = document.querySelector("#loading");
+  const status = document.querySelector("#status");
 
   const botao = document.querySelector("#entrar");
   const entrada = document.querySelector("#entrada");
+
+
+  /* QUANDO A IMAGEM TERMINAR DE CARREGAR */
+
+  imagem.addEventListener("load", function () {
+
+    loading.style.display = "none";
+
+    status.innerHTML = "Experiência pronta.";
+
+    botao.style.display = "block";
+
+  });
+
+
+  /* BOTÃO ENTRAR */
 
   botao.addEventListener("click", function () {
 
     entrada.style.display = "none";
 
   });
+
 
 </script>
 
