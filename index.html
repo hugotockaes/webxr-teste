@@ -1,121 +1,142 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>WebXR - Realidade Mista</title>
-
-  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <title>Exposições | Hugo Duarte Tockaes</title>
 
   <style>
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #111;
+      color: white;
     }
 
-    #botaoAR {
-      position: fixed;
-      left: 50%;
-      bottom: 40px;
-      transform: translateX(-50%);
-      z-index: 9999;
-
-      padding: 18px 28px;
-      border: none;
-      border-radius: 12px;
-
-      background: white;
-      color: black;
-
-      font-size: 18px;
-      font-weight: bold;
+    header {
+      padding: 50px 20px;
+      text-align: center;
+      background: #000;
     }
+
+    header h1 {
+      margin: 0;
+      font-size: 42px;
+    }
+
+    header p {
+      color: #aaa;
+      margin-top: 12px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 50px 20px;
+    }
+
+    .exposicao {
+      display: flex;
+      gap: 30px;
+      background: #1c1c1c;
+      padding: 20px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .exposicao:hover {
+      transform: scale(1.02);
+      background: #292929;
+    }
+
+    .exposicao img {
+      width: 350px;
+      height: 210px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .texto {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .texto h2 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+
+    .texto p {
+      margin: 0;
+      color: #bbb;
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    @media(max-width: 700px) {
+
+      .exposicao {
+        flex-direction: column;
+      }
+
+      .exposicao img {
+        width: 100%;
+        height: auto;
+      }
+
+    }
+
   </style>
 </head>
 
 <body>
 
-<button id="botaoAR">
-  ENTRAR EM REALIDADE MISTA
-</button>
+  <header>
+    <h1>Exposições</h1>
+    <p>Experiências digitais e ambientes imersivos.</p>
+  </header>
 
-<a-scene
-  embedded
-  vr-mode-ui="enabled: false"
-  background="transparent: true"
-  renderer="alpha: true">
+  <main class="container">
 
-  <!-- iluminação -->
-  <a-light
-    type="ambient"
-    intensity="1.5">
-  </a-light>
+    <a class="exposicao" href="historia-tv.html">
 
-  <!-- cubo -->
-  <a-box
-    position="0 1.4 -2"
-    width="0.4"
-    height="0.4"
-    depth="0.4"
-    color="#FF3355">
-  </a-box>
+      <img
+        src="imagens/tv.jpg"
+        alt="Exposição História da TV Brasileira"
+      >
 
-  <a-camera position="0 1.6 0"></a-camera>
+      <div class="texto">
 
-</a-scene>
+        <h2>História da TV Brasileira</h2>
 
+        <p>
+          Uma experiência virtual sobre a evolução da televisão brasileira,
+          reunindo aparelhos históricos, conteúdos audiovisuais e elementos
+          que marcaram diferentes períodos da televisão no Brasil.
+        </p>
 
-<script>
+      </div>
 
-const botao = document.querySelector("#botaoAR");
-const scene = document.querySelector("a-scene");
+    </a>
 
-botao.addEventListener("click", async () => {
+  </main>
 
-  if (!navigator.xr) {
-    alert("WebXR não está disponível neste navegador.");
-    return;
-  }
-
-  const suportaAR =
-    await navigator.xr.isSessionSupported("immersive-ar");
-
-  if (!suportaAR) {
-    alert("Este dispositivo não informou suporte a immersive-ar.");
-    return;
-  }
-
-  try {
-
-    const session =
-      await navigator.xr.requestSession(
-        "immersive-ar",
-        {
-          requiredFeatures: ["local-floor"]
-        }
-      );
-
-    scene.renderer.xr.setReferenceSpaceType("local-floor");
-
-    await scene.renderer.xr.setSession(session);
-
-    botao.style.display = "none";
-
-    session.addEventListener("end", () => {
-      botao.style.display = "block";
-    });
-
-  } catch (erro) {
-
-    console.error(erro);
-    alert("Não foi possível iniciar a realidade mista.");
-
-  }
-
-});
-
-</script>
+  <footer>
+    Hugo Duarte Tockaes
+  </footer>
 
 </body>
+
 </html>
