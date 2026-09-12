@@ -15,171 +15,13 @@
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
 
 
-  <!-- ================================= -->
-  <!-- COMPONENTE: RETÂNGULO ARREDONDADO -->
-  <!-- ================================= -->
-
-  <script>
-
-    AFRAME.registerComponent("rounded-panel", {
-
-      schema: {
-
-        width: {
-          type: "number",
-          default: 1
-        },
-
-        height: {
-          type: "number",
-          default: 0.5
-        },
-
-        radius: {
-          type: "number",
-          default: 0.08
-        },
-
-        color: {
-          type: "color",
-          default: "#555555"
-        },
-
-        opacity: {
-          type: "number",
-          default: 1
-        }
-
-      },
-
-
-      init: function () {
-
-        const data = this.data;
-
-        const w = data.width;
-        const h = data.height;
-        const r = Math.min(
-          data.radius,
-          w / 2,
-          h / 2
-        );
-
-
-        const shape = new THREE.Shape();
-
-
-        shape.moveTo(
-          -w / 2 + r,
-          -h / 2
-        );
-
-
-        shape.lineTo(
-          w / 2 - r,
-          -h / 2
-        );
-
-
-        shape.quadraticCurveTo(
-          w / 2,
-          -h / 2,
-          w / 2,
-          -h / 2 + r
-        );
-
-
-        shape.lineTo(
-          w / 2,
-          h / 2 - r
-        );
-
-
-        shape.quadraticCurveTo(
-          w / 2,
-          h / 2,
-          w / 2 - r,
-          h / 2
-        );
-
-
-        shape.lineTo(
-          -w / 2 + r,
-          h / 2
-        );
-
-
-        shape.quadraticCurveTo(
-          -w / 2,
-          h / 2,
-          -w / 2,
-          h / 2 - r
-        );
-
-
-        shape.lineTo(
-          -w / 2,
-          -h / 2 + r
-        );
-
-
-        shape.quadraticCurveTo(
-          -w / 2,
-          -h / 2,
-          -w / 2 + r,
-          -h / 2
-        );
-
-
-        const geometry =
-          new THREE.ShapeGeometry(shape);
-
-
-        const material =
-          new THREE.MeshBasicMaterial({
-
-            color:
-              new THREE.Color(data.color),
-
-            transparent:
-              data.opacity < 1,
-
-            opacity:
-              data.opacity,
-
-            side:
-              THREE.DoubleSide
-
-          });
-
-
-        const mesh =
-          new THREE.Mesh(
-            geometry,
-            material
-          );
-
-
-        this.el.setObject3D(
-          "mesh",
-          mesh
-        );
-
-      }
-
-    });
-
-  </script>
-
-
-
   <style>
 
     body {
 
       margin: 0;
 
-      background: black;
+      background: #000000;
 
       font-family:
         Arial,
@@ -189,10 +31,9 @@
     }
 
 
-
-    /* ================================= */
-    /* TELA DE ENTRADA */
-    /* ================================= */
+    /* =============================== */
+    /* ENTRADA */
+    /* =============================== */
 
     #entrada {
 
@@ -208,14 +49,13 @@
 
       justify-content: center;
 
-      background: black;
+      background: #000000;
 
       color: white;
 
       z-index: 20;
 
     }
-
 
 
     #entrada h1 {
@@ -227,15 +67,13 @@
     }
 
 
-
     #entrada p {
 
-      color: #999;
+      color: #999999;
 
       margin-bottom: 30px;
 
     }
-
 
 
     #entrar {
@@ -244,11 +82,11 @@
 
       border: none;
 
-      border-radius: 10px;
+      border-radius: 12px;
 
-      background: #ddd;
+      background: #666666;
 
-      color: #111;
+      color: #ffffff;
 
       font-size: 18px;
 
@@ -263,13 +101,12 @@
 </head>
 
 
-
 <body>
 
 
-<!-- ================================= -->
-<!-- ENTRADA -->
-<!-- ================================= -->
+<!-- =============================== -->
+<!-- TELA INICIAL -->
+<!-- =============================== -->
 
 <div id="entrada">
 
@@ -289,9 +126,27 @@
 
 
 
-<!-- ================================= -->
+<!-- =============================== -->
+<!-- ÁUDIO -->
+<!-- =============================== -->
+
+<audio
+
+  id="musica"
+
+  src="musicas/mixkit-sun-and-his-daughter-580.mp3"
+
+  preload="auto"
+
+  loop>
+
+</audio>
+
+
+
+<!-- =============================== -->
 <!-- CENA -->
-<!-- ================================= -->
+<!-- =============================== -->
 
 <a-scene
 
@@ -304,10 +159,9 @@
 >
 
 
-  <!-- ================================= -->
+  <!-- =============================== -->
   <!-- PANORAMA -->
-  <!-- IMAGEM 1 JÁ COMEÇA CARREGANDO -->
-  <!-- ================================= -->
+  <!-- =============================== -->
 
   <a-sky
 
@@ -321,50 +175,107 @@
 
 
 
-  <!-- ================================= -->
-  <!-- MENU PEQUENO -->
-  <!-- ================================= -->
+  <!-- =============================== -->
+  <!-- MENU -->
+  <!-- 25% MENOR -->
+  <!-- =============================== -->
 
   <a-entity
 
     id="menu"
 
-    position="0 1.18 -1.6"
+    position="0 1.25 -1.7"
+
+    scale="0.75 0.75 0.75"
 
   >
 
 
-    <!-- CAIXA TRANSPARENTE -->
-
-    <a-entity
-
-      position="0 0 0"
-
-      rounded-panel="
-        width: 1.35;
-        height: 0.52;
-        radius: 0.08;
-        color: #333333;
-        opacity: 0.65">
-
-    </a-entity>
+    <!-- =============================== -->
+    <!-- FUNDO -->
+    <!-- CINZA CLARO 50% -->
+    <!-- =============================== -->
 
 
+    <!-- CENTRO -->
 
-    <!-- TEXTO -->
+    <a-plane
 
-    <a-entity
+      width="1.35"
 
-      position="0 0.14 0.015"
+      height="0.55"
 
-      rounded-panel="
-        width: 1.08;
-        height: 0.15;
-        radius: 0.04;
-        color: #555555;
-        opacity: 0.65">
+      color="#BDBDBD"
 
-    </a-entity>
+      opacity="0.5"
+
+      material="
+        shader: flat;
+        transparent: true">
+
+    </a-plane>
+
+
+    <!-- EXTREMIDADE ESQUERDA -->
+
+    <a-circle
+
+      radius="0.275"
+
+      position="-0.675 0 0"
+
+      color="#BDBDBD"
+
+      opacity="0.5"
+
+      material="
+        shader: flat;
+        transparent: true">
+
+    </a-circle>
+
+
+    <!-- EXTREMIDADE DIREITA -->
+
+    <a-circle
+
+      radius="0.275"
+
+      position="0.675 0 0"
+
+      color="#BDBDBD"
+
+      opacity="0.5"
+
+      material="
+        shader: flat;
+        transparent: true">
+
+    </a-circle>
+
+
+
+    <!-- =============================== -->
+    <!-- TÍTULO -->
+    <!-- =============================== -->
+
+    <a-plane
+
+      width="1.05"
+
+      height="0.15"
+
+      position="0 0.145 0.02"
+
+      color="#888888"
+
+      opacity="0.55"
+
+      material="
+        shader: flat;
+        transparent: true">
+
+    </a-plane>
 
 
     <a-text
@@ -375,17 +286,17 @@
 
       color="#FFFFFF"
 
-      width="0.9"
+      width="0.92"
 
-      position="0 0.14 0.025">
+      position="0 0.145 0.04">
 
     </a-text>
 
 
 
-    <!-- ================================= -->
-    <!-- ANTERIOR -->
-    <!-- ================================= -->
+    <!-- =============================== -->
+    <!-- BOTÃO ANTERIOR -->
+    <!-- =============================== -->
 
     <a-entity
 
@@ -393,20 +304,13 @@
 
       class="clicavel"
 
-      position="-0.29 -0.10 0.02"
-
-      rounded-panel="
-        width: 0.48;
-        height: 0.19;
-        radius: 0.045;
-        color: #777777;
-        opacity: 0.9"
+      position="-0.31 -0.105 0.04"
 
       animation__mouseenter="
         property: scale;
         startEvents: mouseenter;
         dur: 150;
-        to: 1.1 1.1 1.1"
+        to: 1.10 1.10 1.10"
 
       animation__mouseleave="
         property: scale;
@@ -416,6 +320,53 @@
 
     >
 
+
+      <!-- CORPO -->
+
+      <a-plane
+
+        width="0.47"
+
+        height="0.20"
+
+        color="#666666"
+
+        material="shader: flat">
+
+      </a-plane>
+
+
+      <!-- LADO ESQUERDO -->
+
+      <a-circle
+
+        radius="0.10"
+
+        position="-0.235 0 0"
+
+        color="#666666"
+
+        material="shader: flat">
+
+      </a-circle>
+
+
+      <!-- LADO DIREITO -->
+
+      <a-circle
+
+        radius="0.10"
+
+        position="0.235 0 0"
+
+        color="#666666"
+
+        material="shader: flat">
+
+      </a-circle>
+
+
+      <!-- TEXTO MAIOR -->
 
       <a-text
 
@@ -425,20 +376,39 @@
 
         color="#FFFFFF"
 
-        width="0.42"
+        width="0.54"
 
-        position="0 0 0.02">
+        position="0 0 0.025">
 
       </a-text>
+
+
+      <!-- ÁREA INVISÍVEL DE INTERAÇÃO -->
+
+      <a-plane
+
+        class="clicavel"
+
+        width="0.67"
+
+        height="0.23"
+
+        position="0 0 0.04"
+
+        material="
+          transparent: true;
+          opacity: 0.001">
+
+      </a-plane>
 
 
     </a-entity>
 
 
 
-    <!-- ================================= -->
-    <!-- PRÓXIMA -->
-    <!-- ================================= -->
+    <!-- =============================== -->
+    <!-- BOTÃO PRÓXIMA -->
+    <!-- =============================== -->
 
     <a-entity
 
@@ -446,20 +416,13 @@
 
       class="clicavel"
 
-      position="0.29 -0.10 0.02"
-
-      rounded-panel="
-        width: 0.48;
-        height: 0.19;
-        radius: 0.045;
-        color: #777777;
-        opacity: 0.9"
+      position="0.31 -0.105 0.04"
 
       animation__mouseenter="
         property: scale;
         startEvents: mouseenter;
         dur: 150;
-        to: 1.1 1.1 1.1"
+        to: 1.10 1.10 1.10"
 
       animation__mouseleave="
         property: scale;
@@ -470,6 +433,53 @@
     >
 
 
+      <!-- CORPO -->
+
+      <a-plane
+
+        width="0.47"
+
+        height="0.20"
+
+        color="#666666"
+
+        material="shader: flat">
+
+      </a-plane>
+
+
+      <!-- LADO ESQUERDO -->
+
+      <a-circle
+
+        radius="0.10"
+
+        position="-0.235 0 0"
+
+        color="#666666"
+
+        material="shader: flat">
+
+      </a-circle>
+
+
+      <!-- LADO DIREITO -->
+
+      <a-circle
+
+        radius="0.10"
+
+        position="0.235 0 0"
+
+        color="#666666"
+
+        material="shader: flat">
+
+      </a-circle>
+
+
+      <!-- TEXTO MAIOR -->
+
       <a-text
 
         value="PROXIMA >"
@@ -478,11 +488,30 @@
 
         color="#FFFFFF"
 
-        width="0.42"
+        width="0.54"
 
-        position="0 0 0.02">
+        position="0 0 0.025">
 
       </a-text>
+
+
+      <!-- ÁREA INVISÍVEL -->
+
+      <a-plane
+
+        class="clicavel"
+
+        width="0.67"
+
+        height="0.23"
+
+        position="0 0 0.04"
+
+        material="
+          transparent: true;
+          opacity: 0.001">
+
+      </a-plane>
 
 
     </a-entity>
@@ -492,20 +521,23 @@
 
 
 
-  <!-- ================================= -->
+  <!-- =============================== -->
   <!-- CÂMERA -->
-  <!-- ================================= -->
+  <!-- =============================== -->
 
   <a-camera>
 
 
-    <!-- SELEÇÃO PELO OLHAR -->
+    <!-- =============================== -->
+    <!-- MIRA -->
+    <!-- AGORA 1 SEGUNDO -->
+    <!-- =============================== -->
 
     <a-cursor
 
       fuse="true"
 
-      fuse-timeout="2000"
+      fuse-timeout="1000"
 
       color="#FFFFFF"
 
@@ -517,7 +549,7 @@
         property: scale;
         startEvents: fusing;
         easing: easeInCubic;
-        dur: 2000;
+        dur: 1000;
         from: 1 1 1;
         to: 0.2 0.2 0.2"
 
@@ -534,15 +566,15 @@
 
 
 
-    <!-- ================================= -->
+    <!-- =============================== -->
     <!-- FADE PRETO -->
-    <!-- ================================= -->
+    <!-- =============================== -->
 
     <a-plane
 
       id="fade"
 
-      position="0 0 -0.35"
+      position="0 0 -0.3"
 
       width="4"
 
@@ -565,12 +597,13 @@
 
 
 
+
 <script>
 
 
-/* ================================= */
+/* ===================================== */
 /* ELEMENTOS */
-/* ================================= */
+/* ===================================== */
 
 const entrada =
   document.querySelector("#entrada");
@@ -578,6 +611,10 @@ const entrada =
 
 const entrar =
   document.querySelector("#entrar");
+
+
+const musica =
+  document.querySelector("#musica");
 
 
 const panorama =
@@ -597,9 +634,9 @@ const fade =
 
 
 
-/* ================================= */
-/* IMAGEM ATUAL */
-/* ================================= */
+/* ===================================== */
+/* ESTADO */
+/* ===================================== */
 
 let imagemAtual = 1;
 
@@ -607,9 +644,9 @@ let trocando = false;
 
 
 
-/* ================================= */
-/* CRIA O ENDEREÇO AUTOMATICAMENTE */
-/* ================================= */
+/* ===================================== */
+/* CAMINHO AUTOMÁTICO DA IMAGEM */
+/* ===================================== */
 
 function enderecoImagem(numero) {
 
@@ -623,11 +660,155 @@ function enderecoImagem(numero) {
 
 
 
-/* ================================= */
-/* OPACIDADE DO FADE */
-/* ================================= */
+/* ===================================== */
+/* CAMINHO AUTOMÁTICO DO XML */
+/* ===================================== */
 
-function definirFade(valor) {
+function enderecoXML(numero) {
+
+  return (
+    "imagens/imagem360_" +
+    numero +
+    ".xml"
+  );
+
+}
+
+
+
+/* ===================================== */
+/* CARREGAR XML */
+/* ===================================== */
+
+async function carregarXML(numero) {
+
+
+  const endereco =
+    enderecoXML(numero);
+
+
+  try {
+
+
+    const resposta =
+      await fetch(endereco);
+
+
+    /*
+    XML NÃO EXISTE?
+
+    SEM PROBLEMA.
+
+    A GALERIA CONTINUA NORMAL.
+    */
+
+    if (!resposta.ok) {
+
+      console.log(
+        "XML não encontrado:",
+        endereco
+      );
+
+      return;
+
+    }
+
+
+    const texto =
+      await resposta.text();
+
+
+    const parser =
+      new DOMParser();
+
+
+    const xml =
+      parser.parseFromString(
+        texto,
+        "application/xml"
+      );
+
+
+
+    /* ================================= */
+    /* EXEMPLOS DE DADOS */
+    /* ================================= */
+
+
+    const titulo =
+      xml.querySelector("titulo")
+      ?.textContent;
+
+
+    const descricao =
+      xml.querySelector("descricao")
+      ?.textContent;
+
+
+    const autor =
+      xml.querySelector("autor")
+      ?.textContent;
+
+
+    const ano =
+      xml.querySelector("ano")
+      ?.textContent;
+
+
+
+    console.log(
+      "XML DA IMAGEM:",
+      numero
+    );
+
+
+    console.log(
+      "Título:",
+      titulo
+    );
+
+
+    console.log(
+      "Descrição:",
+      descricao
+    );
+
+
+    console.log(
+      "Autor:",
+      autor
+    );
+
+
+    console.log(
+      "Ano:",
+      ano
+    );
+
+
+  }
+
+
+  catch (erro) {
+
+
+    console.log(
+      "Nenhum XML para esta imagem."
+    );
+
+
+  }
+
+}
+
+
+
+/* ===================================== */
+/* FADE */
+/* ===================================== */
+
+function opacidadeFade(valor) {
+
 
   fade.setAttribute(
 
@@ -635,7 +816,8 @@ function definirFade(valor) {
 
     "shader: flat;" +
     "transparent: true;" +
-    "opacity: " + valor
+    "opacity: " +
+    valor
 
   );
 
@@ -643,38 +825,50 @@ function definirFade(valor) {
 
 
 
-/* ================================= */
-/* FECHA A IMAGEM EM PRETO */
-/* ================================= */
+/* ===================================== */
+/* IR PARA PRETO */
+/* ===================================== */
 
-function fadeParaPreto(callback) {
-
-  let opacity = 0;
+function fecharFade(callback) {
 
 
-  const timer =
+  let valor = 0;
+
+
+  const animacao =
     setInterval(function () {
 
 
-      opacity += 0.07;
+      valor += 0.08;
 
 
-      if (opacity >= 1) {
+      if (valor >= 1) {
 
-        opacity = 1;
 
-        definirFade(opacity);
+        valor = 1;
 
-        clearInterval(timer);
+
+        opacidadeFade(
+          valor
+        );
+
+
+        clearInterval(
+          animacao
+        );
+
 
         callback();
 
+
         return;
 
       }
 
 
-      definirFade(opacity);
+      opacidadeFade(
+        valor
+      );
 
 
     }, 25);
@@ -683,38 +877,50 @@ function fadeParaPreto(callback) {
 
 
 
-/* ================================= */
-/* REVELA NOVA IMAGEM */
-/* ================================= */
+/* ===================================== */
+/* SAIR DO PRETO */
+/* ===================================== */
 
-function fadeDaImagem() {
-
-  let opacity = 1;
+function abrirFade() {
 
 
-  const timer =
+  let valor = 1;
+
+
+  const animacao =
     setInterval(function () {
 
 
-      opacity -= 0.07;
+      valor -= 0.08;
 
 
-      if (opacity <= 0) {
+      if (valor <= 0) {
 
-        opacity = 0;
 
-        definirFade(opacity);
+        valor = 0;
 
-        clearInterval(timer);
+
+        opacidadeFade(
+          valor
+        );
+
+
+        clearInterval(
+          animacao
+        );
+
 
         trocando = false;
+
 
         return;
 
       }
 
 
-      definirFade(opacity);
+      opacidadeFade(
+        valor
+      );
 
 
     }, 25);
@@ -723,9 +929,9 @@ function fadeDaImagem() {
 
 
 
-/* ================================= */
+/* ===================================== */
 /* TROCAR PANORAMA */
-/* ================================= */
+/* ===================================== */
 
 function carregarImagem(numero) {
 
@@ -753,8 +959,6 @@ function carregarImagem(numero) {
 
 
 
-  /* IMAGEM EXISTE */
-
   teste.onload =
     function () {
 
@@ -762,7 +966,7 @@ function carregarImagem(numero) {
       trocando = true;
 
 
-      fadeParaPreto(
+      fecharFade(
 
         function () {
 
@@ -777,17 +981,24 @@ function carregarImagem(numero) {
             numero;
 
 
-          /*
-          Aguarda um instante
-          para a textura entrar
-          */
+
+          /* ============================ */
+          /* CARREGA XML DA MESMA IMAGEM */
+          /* ============================ */
+
+          carregarXML(
+            numero
+          );
+
 
 
           setTimeout(
 
             function () {
 
-              fadeDaImagem();
+
+              abrirFade();
+
 
             },
 
@@ -805,7 +1016,12 @@ function carregarImagem(numero) {
 
 
 
-  /* IMAGEM NÃO EXISTE */
+  /*
+  SE A PRÓXIMA IMAGEM
+  NÃO EXISTIR,
+  NÃO TROCA.
+  */
+
 
   teste.onerror =
     function () {
@@ -820,7 +1036,6 @@ function carregarImagem(numero) {
     };
 
 
-
   teste.src =
     endereco;
 
@@ -828,9 +1043,9 @@ function carregarImagem(numero) {
 
 
 
-/* ================================= */
+/* ===================================== */
 /* PRÓXIMA */
-/* ================================= */
+/* ===================================== */
 
 proxima.addEventListener(
 
@@ -850,9 +1065,9 @@ proxima.addEventListener(
 
 
 
-/* ================================= */
+/* ===================================== */
 /* ANTERIOR */
-/* ================================= */
+/* ===================================== */
 
 anterior.addEventListener(
 
@@ -872,9 +1087,9 @@ anterior.addEventListener(
 
 
 
-/* ================================= */
+/* ===================================== */
 /* ENTRAR */
-/* ================================= */
+/* ===================================== */
 
 entrar.addEventListener(
 
@@ -883,14 +1098,38 @@ entrar.addEventListener(
   function () {
 
 
+    entrada.style.display =
+      "none";
+
+
     /*
-    A IMAGEM 1 JÁ ESTÁ
-    CARREGADA ATRÁS DA TELA
+    O CLIQUE DO USUÁRIO
+    LIBERA O ÁUDIO NO NAVEGADOR
     */
 
 
-    entrada.style.display =
-      "none";
+    musica.volume =
+      0.45;
+
+
+    musica.play()
+      .catch(function (erro) {
+
+        console.log(
+          "Áudio aguardando autorização:",
+          erro
+        );
+
+      });
+
+
+    /*
+    CARREGA TAMBÉM
+    O XML DA IMAGEM 1
+    */
+
+
+    carregarXML(1);
 
 
   }
