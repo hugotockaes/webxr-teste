@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
+
+<title>Teste 6 - Realidade Aumentada</title>
+
+
+<!-- A-FRAME -->
+
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+
+<!-- MINDAR -->
+
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+
+    margin:0;
+
+    width:100%;
+    height:100%;
+
+    background:#000;
+
+    font-family:Arial, Helvetica, sans-serif;
+
+    overflow:hidden;
+}
+
+
+/* =========================================
+   TELA INICIAL
+========================================= */
+
+#inicio{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100vw;
+    height:100vh;
+
+    z-index:999999 !important;
+
+    background:#111;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+}
+
+
+#painel{
+
+    width:90%;
+    max-width:430px;
+
+    max-height:95vh;
+
+    padding:20px;
+
+    background:#202020;
+
+    border-radius:22px;
+
+    text-align:center;
+
+    color:white;
+
+    overflow:auto;
+
+}
+
+
+#painel h1{
+
+    margin-top:0;
+
+    font-size:25px;
+
+}
+
+
+#painel p{
+
+    color:#ccc;
+
+    line-height:1.4;
+
+}
+
+
+/* IMAGEM QUE A PESSOA PRECISA PROCURAR */
+
+#imagemAlvo{
+
+    display:block;
+
+    width:100%;
+
+    max-height:58vh;
+
+    object-fit:contain;
+
+    margin:15px auto;
+
+    background:white;
+
+    border-radius:14px;
+
+}
+
+
+/* BOTÃO */
+
+#botaoIniciar{
+
+    width:100%;
+
+    padding:16px;
+
+    margin-top:10px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:white;
+
+    color:black;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+
+
+/* =========================================
+   INTERFACE AR
+========================================= */
+
+#interfaceAR{
+
+    position:fixed;
+
+    width:100%;
+    height:100%;
+
+    top:0;
+    left:0;
+
+    z-index:9999;
+
+    pointer-events:none;
+
+    display:none;
+
+}
+
+
+#status{
+
+    position:absolute;
+
+    top:25px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    background:rgba(0,0,0,.75);
+
+    color:white;
+
+    padding:12px 20px;
+
+    border-radius:30px;
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    white-space:nowrap;
+
+}
+
+
+
+/* MINIATURA */
+
+#miniatura{
+
+    position:absolute;
+
+    left:15px;
+
+    bottom:20px;
+
+    width:110px;
+
+    padding:8px;
+
+    background:rgba(0,0,0,.75);
+
+    border-radius:14px;
+
+}
+
+
+#miniaturaTexto{
+
+    color:white;
+
+    font-size:10px;
+
+    text-align:center;
+
+    margin-bottom:6px;
+
+}
+
+
+#miniatura img{
+
+    width:100%;
+
+    display:block;
+
+    border-radius:8px;
+
+}
+
+
+
+/* =========================================
+   CENA AR
+========================================= */
+
+#arScene{
+
+    position:fixed !important;
+
+    top:0;
+    left:0;
+
+    width:100vw !important;
+    height:100vh !important;
+
+}
+
+
+/* botão padrão VR não interessa */
+
+.a-enter-vr{
+
+    display:none !important;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+
+<!-- =========================================
+     TELA INICIAL
+========================================= -->
+
+
+<div id="inicio">
+
+    <div id="painel">
+
+
+        <h1>
+            ENCONTRE ESTA IMAGEM
+        </h1>
+
+
+        <p>
+            Procure esta prancha no ambiente.
+            Depois clique no botão e aponte a câmera para ela.
+        </p>
+
+
+        <img
+            id="imagemAlvo"
+            src="./ativador.jpg"
+            alt="Imagem ativadora"
+        >
+
+
+        <button id="botaoIniciar">
+
+            INICIAR CÂMERA
+
+        </button>
+
+
+    </div>
+
+</div>
+
+
+
+
+<!-- =========================================
+     INTERFACE DURANTE O AR
+========================================= -->
+
+
+<div id="interfaceAR">
+
+
+    <div id="status">
+
+        🔎 PROCURANDO IMAGEM...
+
+    </div>
+
+
+    <div id="miniatura">
+
+
+        <div id="miniaturaTexto">
+
+            PROCURE ESTA IMAGEM
+
+        </div>
+
+
+        <img
+            src="./ativador.jpg"
+            alt="Imagem alvo"
+        >
+
+
+    </div>
+
+
+</div>
+
+
+
+
+<!-- =========================================
+     REALIDADE AUMENTADA
+========================================= -->
+
+
+<a-scene
+
+    id="arScene"
+
+    mindar-image="
+        imageTargetSrc: ./targets.mind;
+        autoStart: false;
+        uiLoading: no;
+        uiScanning: no;
+        uiError: no;
+    "
+
+    color-space="sRGB"
+
+    renderer="
+        colorManagement: true;
+        physicallyCorrectLights: true;
+        antialias: true;
+        alpha: true;
+    "
+
+    vr-mode-ui="enabled: false"
+
+    device-orientation-permission-ui="enabled: false"
+
+>
+
+
+<!-- CÂMERA -->
+
+
+<a-camera
+
+    position="0 0 0"
+
+    look-controls="enabled: false">
+
+</a-camera>
+
+
+
+
+<!-- IMAGEM RECONHECIDA -->
+
+
+<a-entity
+
+    id="target"
+
+    mindar-image-target="targetIndex: 0"
+
+>
+
+
+    <!-- BASE -->
+
+
+    <a-cylinder
+
+        position="0 0 0.03"
+
+        radius="0.32"
+
+        height="0.05"
+
+        color="#222">
+
+    </a-cylinder>
+
+
+
+    <!-- CUBO -->
+
+
+    <a-box
+
+        position="0 0 0.35"
+
+        scale="0.45 0.45 0.45"
+
+        color="#ff2020"
+
+        animation="
+            property: rotation;
+            to: 0 360 0;
+            loop: true;
+            dur: 3000;
+            easing: linear;
+        "
+
+    >
+
+    </a-box>
+
+
+</a-entity>
+
+
+</a-scene>
+
+
+
+
+<script>
+
+
+const inicio =
+document.querySelector("#inicio");
+
+
+const botao =
+document.querySelector("#botaoIniciar");
+
+
+const interfaceAR =
+document.querySelector("#interfaceAR");
+
+
+const status =
+document.querySelector("#status");
+
+
+const scene =
+document.querySelector("#arScene");
+
+
+const target =
+document.querySelector("#target");
+
+
+
+
+
+/* =========================================
+   VERIFICA SE A IMAGEM CARREGOU
+========================================= */
+
+
+const imagem =
+document.querySelector("#imagemAlvo");
+
+
+imagem.addEventListener("load", () => {
+
+    console.log("Imagem ativadora carregada.");
+
+});
+
+
+imagem.addEventListener("error", () => {
+
+    console.error("ERRO: ativador.jpg não encontrado.");
+
+    imagem.style.display = "none";
+
+    const aviso =
+    document.createElement("p");
+
+    aviso.innerHTML =
+    "⚠️ Arquivo ativador.jpg não encontrado.";
+
+    aviso.style.color = "#ff5555";
+
+    aviso.style.fontWeight = "bold";
+
+    imagem.parentNode.insertBefore(
+        aviso,
+        botao
+    );
+
+});
+
+
+
+
+
+/* =========================================
+   INICIAR EXPERIÊNCIA
+========================================= */
+
+
+botao.addEventListener("click", async () => {
+
+
+    botao.disabled = true;
+
+    botao.innerHTML =
+    "ABRINDO CÂMERA...";
+
+
+    /*
+    garante que o A-Frame terminou
+    de carregar antes de iniciar o MindAR
+    */
+
+
+    if(!scene.hasLoaded){
+
+        await new Promise(resolve => {
+
+            scene.addEventListener(
+                "loaded",
+                resolve,
+                { once:true }
+            );
+
+        });
+
+    }
+
+
+    try{
+
+
+        const arSystem =
+        scene.systems["mindar-image-system"];
+
+
+        await arSystem.start();
+
+
+
+        /*
+        Só agora retiramos
+        a tela inicial
+        */
+
+
+        inicio.style.display =
+        "none";
+
+
+        interfaceAR.style.display =
+        "block";
+
+
+        status.innerHTML =
+        "🔎 PROCURANDO IMAGEM...";
+
+
+    }
+
+    catch(erro){
+
+
+        console.error(erro);
+
+
+        botao.disabled =
+        false;
+
+
+        botao.innerHTML =
+        "TENTAR NOVAMENTE";
+
+
+        alert(
+        "Não foi possível abrir a câmera. Verifique a permissão do navegador."
+        );
+
+
+    }
+
+
+});
+
+
+
+
+
+/* =========================================
+   TARGET ENCONTRADO
+========================================= */
+
+
+target.addEventListener(
+
+    "targetFound",
+
+    () => {
+
+
+        console.log(
+            "Imagem encontrada!"
+        );
+
+
+        status.innerHTML =
+        "✅ IMAGEM ENCONTRADA";
+
+
+    }
+
+);
+
+
+
+
+
+/* =========================================
+   TARGET PERDIDO
+========================================= */
+
+
+target.addEventListener(
+
+    "targetLost",
+
+    () => {
+
+
+        console.log(
+            "Imagem perdida."
+        );
+
+
+        status.innerHTML =
+        "🔎 PROCURANDO IMAGEM...";
+
+
+    }
+
+);
+
+
+</script>
+
+
+</body>
+
+</html>
