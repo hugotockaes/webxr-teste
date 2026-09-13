@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
+
+<title>CMY Camera</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+/* Vídeo original fica escondido */
+
+#video{
+  display:none;
+}
+
+/* Canvas mostra a câmera processada */
+
+#canvas{
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  background:#000;
+}
+
+/* TELA INICIAL */
+
+#inicio{
+  position:fixed;
+  inset:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  z-index:20;
+
+  background:#000;
+}
+
+#ativar{
+  border:0;
+
+  padding:16px 28px;
+
+  border-radius:16px;
+
+  background:#eee;
+  color:#111;
+
+  font-size:18px;
+  font-weight:bold;
+
+  cursor:pointer;
+}
+
+/* MENU CMY */
+
+#menuCMY{
+
+  position:fixed;
+
+  bottom:30px;
+
+  left:50%;
+
+  transform:translateX(-50%);
+
+  display:none;
+
+  gap:14px;
+
+  z-index:30;
+
+  padding:10px;
+
+  background:rgba(0,0,0,.45);
+
+  backdrop-filter:blur(10px);
+
+  border-radius:20px;
+}
+
+/* BOTÕES */
+
+.cmy{
+
+  width:65px;
+  height:65px;
+
+  border-radius:50%;
+
+  border:3px solid rgba(255,255,255,.5);
+
+  color:white;
+
+  font-size:24px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+}
+
+#cyan{
+  background:#00bcd4;
+}
+
+#magenta{
+  background:#e6007e;
+}
+
+#yellow{
+  background:#ffd600;
+  color:#111;
+}
+
+/* botão selecionado */
+
+.cmy.ativo{
+
+  border:4px solid white;
+
+  transform:scale(1.12);
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<video
+id="video"
+autoplay
+playsinline
+muted>
+</video>
+
+
+<canvas id="canvas"></canvas>
+
+
+<div id="inicio">
+
+<button id="ativar">
+Ativar câmera
+</button>
+
+</div>
+
+
+<div id="menuCMY">
+
+<button
+id="cyan"
+class="cmy">
+C
+</button>
+
+
+<button
+id="magenta"
+class="cmy">
+M
+</button>
+
+
+<button
+id="yellow"
+class="cmy">
+Y
+</button>
+
+</div>
+
+
+
+<script>
+
+/* ================================
+
+ELEMENTOS
+
+================================ */
+
+const video =
+document.getElementById("video");
+
+const canvas =
+document.getElementById("canvas");
+
+const ctx =
+canvas.getContext("2d");
+
+
+const inicio =
+document.getElementById("inicio");
+
+const ativar =
+document.getElementById("ativar");
+
+const menuCMY =
+document.getElementById("menuCMY");
+
+
+const cyan =
+document.getElementById("cyan");
+
+const magenta =
+document.getElementById("magenta");
+
+const yellow =
+document.getElementById("yellow");
+
+
+/* Canal inicial */
+
+let canal = "normal";
+
+
+/* ================================
+
+ATIVAR CÂMERA
+
+================================ */
+
+ativar.addEventListener(
+"click",
+async ()=>{
+
+try{
+
+const stream =
+await navigator.mediaDevices.getUserMedia({
+
+video:{
+
+facingMode:{
+ideal:"environment"
+}
+
+},
+
+audio:false
+
+});
+
+
+video.srcObject = stream;
+
+
+await video.play();
+
+
+inicio.style.display =
+"none";
+
+
+menuCMY.style.display =
+"flex";
+
+
+ajustarCanvas();
+
+
+processarCamera();
+
+
+}catch(erro){
+
+console.error(erro);
+
+alert(
+"Não foi possível acessar a câmera."
+);
+
+}
+
+});
+
+
+/* ================================
+
+BOTÕES CMY
+
+================================ */
+
+
+cyan.addEventListener(
+"click",
+()=>{
+
+canal="cyan";
+
+selecionar(cyan);
+
+});
+
+
+magenta.addEventListener(
+"click",
+()=>{
+
+canal="magenta";
+
+selecionar(magenta);
+
+});
+
+
+yellow.addEventListener(
+"click",
+()=>{
+
+canal="yellow";
+
+selecionar(yellow);
+
+});
+
+
+function selecionar(botao){
+
+cyan.classList.remove("ativo");
+
+magenta.classList.remove("ativo");
+
+yellow.classList.remove("ativo");
+
+
+botao.classList.add("ativo");
+
+}
+
+
+/* ================================
+
+CANVAS
+
+================================ */
+
+
+function ajustarCanvas(){
+
+canvas.width =
+window.innerWidth;
+
+canvas.height =
+window.innerHeight;
+
+}
+
+
+window.addEventListener(
+"resize",
+ajustarCanvas
+);
+
+
+/* ================================
+
+PROCESSAMENTO DA CÂMERA
+
+================================ */
+
+
+function processarCamera(){
+
+
+if(
+video.readyState >= 2
+){
+
+/*
+
+Calcula preenchimento tipo
+object-fit: cover
+
+*/
+
+const videoRatio =
+video.videoWidth /
+video.videoHeight;
+
+
+const canvasRatio =
+canvas.width /
+canvas.height;
+
+
+let largura;
+let altura;
+let x;
+let y;
+
+
+if(videoRatio > canvasRatio){
+
+altura =
+canvas.height;
+
+largura =
+altura *
+videoRatio;
+
+x =
+(canvas.width-largura)/2;
+
+y=0;
+
+}
+
+else{
+
+largura =
+canvas.width;
+
+altura =
+largura /
+videoRatio;
+
+x=0;
+
+y=
+(canvas.height-altura)/2;
+
+}
+
+
+/* desenha câmera */
+
+ctx.drawImage(
+
+video,
+
+x,
+y,
+
+largura,
+altura
+
+);
+
+
+/* =================================
+
+SEPARAÇÃO CMY
+
+================================= */
+
+if(canal !== "normal"){
+
+const imagem =
+
+ctx.getImageData(
+
+0,
+0,
+
+canvas.width,
+canvas.height
+
+);
+
+
+const pixels =
+imagem.data;
+
+
+/*
+
+Cada pixel:
+
+pixels[i]     = RED
+pixels[i + 1] = GREEN
+pixels[i + 2] = BLUE
+pixels[i + 3] = ALPHA
+
+*/
+
+
+for(
+let i=0;
+i<pixels.length;
+i+=4
+){
+
+if(canal==="cyan"){
+  const c = 255-pixels[i];
+  pixels[i]=0; pixels[i+1]=c; pixels[i+2]=c;
+}
+
+if(canal==="magenta"){
+  const m = 255-pixels[i+1];
+  pixels[i]=m; pixels[i+1]=0; pixels[i+2]=m;
+}
+
+if(canal==="yellow"){
+  const yv = 255-pixels[i+2];
+  pixels[i]=yv; pixels[i+1]=yv; pixels[i+2]=0;
+}
+
+}
+
+
+ctx.putImageData(
+
+imagem,
+
+0,
+0
+
+);
+
+}
+
+}
+
+
+/* próximo frame */
+
+requestAnimationFrame(
+processarCamera
+);
+
+}
+
+
+</script>
+
+</body>
+
+</html>
