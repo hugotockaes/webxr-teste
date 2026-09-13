@@ -466,6 +466,9 @@ altura
 /* =================================
 
 SEPARAÇÃO CMY
+Mesmo conceito visual do RGB:
+remove apenas o canal complementar,
+sem criar imagem negativa.
 
 ================================= */
 
@@ -507,18 +510,27 @@ i+=4
 ){
 
 if(canal==="cyan"){
-  const c = 255-pixels[i];
-  pixels[i]=0; pixels[i+1]=c; pixels[i+2]=c;
+  /*
+  Ciano = Verde + Azul
+  Mantém G e B da imagem original e remove o Vermelho.
+  */
+  pixels[i] = 0;
 }
 
 if(canal==="magenta"){
-  const m = 255-pixels[i+1];
-  pixels[i]=m; pixels[i+1]=0; pixels[i+2]=m;
+  /*
+  Magenta = Vermelho + Azul
+  Mantém R e B da imagem original e remove o Verde.
+  */
+  pixels[i+1] = 0;
 }
 
 if(canal==="yellow"){
-  const yv = 255-pixels[i+2];
-  pixels[i]=yv; pixels[i+1]=yv; pixels[i+2]=0;
+  /*
+  Amarelo = Vermelho + Verde
+  Mantém R e G da imagem original e remove o Azul.
+  */
+  pixels[i+2] = 0;
 }
 
 }
