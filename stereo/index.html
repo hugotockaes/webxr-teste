@@ -1,159 +1,756 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
+
 <head>
-  <meta charset="utf-8">
-  <title>WebXR 360 Stereo SBS</title>
 
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<meta charset="UTF-8">
 
-  <script>
-    AFRAME.registerComponent('stereo-eye', {
-      schema: {
-        eye: {type: 'string', default: 'left'}
-      },
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
 
-      init: function () {
-        this.el.addEventListener('materialtextureloaded', () => {
-          const mesh = this.el.getObject3D('mesh');
-          if (!mesh) return;
+<title>WebXR Stereo 360</title>
 
-          const material = mesh.material;
-          const texture = material.map;
 
-          if (!texture) return;
+<script
+src="https://aframe.io/releases/1.6.0/aframe.min.js">
+</script>
 
-          texture.wrapS = THREE.RepeatWrapping;
-          texture.wrapT = THREE.ClampToEdgeWrapping;
 
-          texture.repeat.set(0.5, 1);
+<style>
 
-          if (this.data.eye === 'left') {
-            texture.offset.set(0, 0);
-          } else {
-            texture.offset.set(0.5, 0);
-          }
+body {
 
-          texture.needsUpdate = true;
-        });
-      }
-    });
-  </script>
+    margin: 0;
 
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: black;
-    }
-  </style>
+    background: black;
+
+    overflow: hidden;
+
+    font-family: Arial, sans-serif;
+
+}
+
+
+/* CONTROLE */
+
+#controls {
+
+    position: fixed;
+
+    bottom: 30px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 99999;
+
+    display: flex;
+
+    gap: 10px;
+
+    background: rgba(20,20,20,0.65);
+
+    padding: 8px;
+
+    border-radius: 14px;
+
+}
+
+
+button {
+
+    background: rgba(80,80,80,0.9);
+
+    color: white;
+
+    border: none;
+
+    padding: 12px 20px;
+
+    border-radius: 10px;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+}
+
+
+button:hover {
+
+    background: rgba(120,120,120,0.9);
+
+}
+
+
+#counter {
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 10px;
+
+}
+
+</style>
+
 </head>
+
+
 
 <body>
 
+
+<!-- MENU -->
+
+<div id="controls">
+
+<button onclick="previousStereo()">
+Anterior
+</button>
+
+
+<div id="counter">
+1
+</div>
+
+
+<button onclick="nextStereo()">
+Próxima
+</button>
+
+</div>
+
+
+
 <a-scene
-  renderer="antialias: true"
-  vr-mode-ui="enabled: true"
-  background="color: black">
 
-  <a-assets>
-    <img
-      id="stereo360"
-      src="stereo.jpg"
-      crossorigin="anonymous">
-  </a-assets>
+id="scene"
 
-  <!-- OLHO ESQUERDO -->
-  <a-sphere
-    id="sphereLeft"
-    radius="10"
-    scale="-1 1 1"
-    segments-width="96"
-    segments-height="64"
-    material="
-      src: #stereo360;
-      side: back;
-      shader: flat;
-    "
-    stereo-eye="eye: left">
-  </a-sphere>
+renderer="
+antialias: true;
+colorManagement: true;
+sortObjects: true;
+"
 
-  <!-- OLHO DIREITO -->
-  <a-sphere
-    id="sphereRight"
-    radius="10.01"
-    scale="-1 1 1"
-    segments-width="96"
-    segments-height="64"
-    material="
-      src: #stereo360;
-      side: back;
-      shader: flat;
-    "
-    stereo-eye="eye: right">
-  </a-sphere>
+vr-mode-ui="enabled: true"
 
-  <a-camera
-    position="0 1.6 0"
-    look-controls="enabled: true"
-    wasd-controls="enabled: false">
-  </a-camera>
+background="color: #000000"
+
+>
+
+
+<!-- ESFERA LEFT -->
+
+<a-sphere
+
+id="sphereLeft"
+
+radius="10"
+
+segments-width="128"
+
+segments-height="64"
+
+scale="-1 1 1"
+
+material="
+shader: flat;
+side: back;
+transparent: false;
+">
+
+</a-sphere>
+
+
+
+<!-- ESFERA RIGHT -->
+
+<a-sphere
+
+id="sphereRight"
+
+radius="10"
+
+segments-width="128"
+
+segments-height="64"
+
+scale="-1 1 1"
+
+material="
+shader: flat;
+side: back;
+transparent: false;
+">
+
+</a-sphere>
+
+
+
+<!-- CAMERA -->
+
+<a-camera
+
+id="camera"
+
+position="0 1.6 0"
+
+look-controls="enabled: true"
+
+wasd-controls="enabled: false">
+
+</a-camera>
+
 
 </a-scene>
 
+
+
+
 <script>
-  const scene = document.querySelector('a-scene');
 
-  scene.addEventListener('loaded', () => {
 
-    const leftSphere =
-      document.querySelector('#sphereLeft').getObject3D('mesh');
+/* =====================================================
+   LISTA DE IMAGENS
+===================================================== */
 
-    const rightSphere =
-      document.querySelector('#sphereRight').getObject3D('mesh');
 
-    if (leftSphere) {
-      leftSphere.layers.set(1);
+const stereoFiles = [
+
+    "stereo1.png",
+
+    "stereo2.png",
+
+    "stereo3.png",
+
+    "stereo4.png",
+
+    "stereo5.png",
+
+    "stereo6.png",
+
+    "stereo7.png",
+
+    "stereo8.png",
+
+    "stereo9.png",
+
+    "stereo10.png"
+
+];
+
+
+
+let currentStereo = 0;
+
+
+
+const scene =
+document.querySelector("#scene");
+
+
+const sphereLeft =
+document.querySelector("#sphereLeft");
+
+
+const sphereRight =
+document.querySelector("#sphereRight");
+
+
+
+/* =====================================================
+   CARREGAR IMAGEM
+===================================================== */
+
+
+function loadStereo(index) {
+
+
+    currentStereo = index;
+
+
+    document.querySelector("#counter")
+    .innerText =
+    currentStereo + 1;
+
+
+
+    const file =
+    stereoFiles[currentStereo];
+
+
+    /*
+    CACHE BUSTER
+
+    Faz o Quest interpretar
+    como uma nova requisição.
+    */
+
+
+    const url =
+    file + "?v=" + Date.now();
+
+
+
+    console.log(
+        "Carregando:",
+        url
+    );
+
+
+
+    const loader =
+    new THREE.TextureLoader();
+
+
+
+    loader.setCrossOrigin("anonymous");
+
+
+
+    loader.load(
+
+
+        url,
+
+
+        function(texture) {
+
+
+
+            console.log(
+                "Imagem carregada:",
+                file
+            );
+
+
+
+            /* =========================
+               TEXTURA LEFT
+            ========================= */
+
+
+            const textureLeft =
+            texture.clone();
+
+
+
+            textureLeft.needsUpdate =
+            true;
+
+
+
+            textureLeft.wrapS =
+            THREE.RepeatWrapping;
+
+
+            textureLeft.wrapT =
+            THREE.ClampToEdgeWrapping;
+
+
+
+            /*
+            Usa metade esquerda
+            da imagem 8000 × 2000
+            */
+
+
+            textureLeft.repeat.set(
+
+                0.5,
+
+                1
+
+            );
+
+
+            textureLeft.offset.set(
+
+                0,
+
+                0
+
+            );
+
+
+
+            textureLeft.colorSpace =
+            THREE.SRGBColorSpace;
+
+
+
+            /* =========================
+               TEXTURA RIGHT
+            ========================= */
+
+
+            const textureRight =
+            texture.clone();
+
+
+
+            textureRight.needsUpdate =
+            true;
+
+
+
+            textureRight.wrapS =
+            THREE.RepeatWrapping;
+
+
+            textureRight.wrapT =
+            THREE.ClampToEdgeWrapping;
+
+
+
+            /*
+            Usa metade direita
+            */
+
+
+            textureRight.repeat.set(
+
+                0.5,
+
+                1
+
+            );
+
+
+            textureRight.offset.set(
+
+                0.5,
+
+                0
+
+            );
+
+
+
+            textureRight.colorSpace =
+            THREE.SRGBColorSpace;
+
+
+
+            /* =========================
+               APLICAR LEFT
+            ========================= */
+
+
+            const meshLeft =
+            sphereLeft
+            .getObject3D("mesh");
+
+
+
+            if(meshLeft) {
+
+
+                if(
+                    meshLeft.material.map
+                ) {
+
+                    meshLeft.material.map
+                    .dispose();
+
+                }
+
+
+                meshLeft.material.map =
+                textureLeft;
+
+
+                meshLeft.material
+                .needsUpdate = true;
+
+            }
+
+
+
+            /* =========================
+               APLICAR RIGHT
+            ========================= */
+
+
+            const meshRight =
+            sphereRight
+            .getObject3D("mesh");
+
+
+
+            if(meshRight) {
+
+
+                if(
+                    meshRight.material.map
+                ) {
+
+                    meshRight.material.map
+                    .dispose();
+
+                }
+
+
+                meshRight.material.map =
+                textureRight;
+
+
+                meshRight.material
+                .needsUpdate = true;
+
+            }
+
+
+
+        },
+
+
+        undefined,
+
+
+        function(error) {
+
+
+            console.error(
+                "ERRO carregando imagem:",
+                file,
+                error
+            );
+
+
+        }
+
+
+    );
+
+
+}
+
+
+
+/* =====================================================
+   PRÓXIMA
+===================================================== */
+
+
+function nextStereo() {
+
+
+    currentStereo++;
+
+
+    if(
+        currentStereo >=
+        stereoFiles.length
+    ) {
+
+
+        currentStereo = 0;
+
+
     }
 
-    if (rightSphere) {
-      rightSphere.layers.set(2);
+
+    loadStereo(
+        currentStereo
+    );
+
+
+}
+
+
+
+/* =====================================================
+   ANTERIOR
+===================================================== */
+
+
+function previousStereo() {
+
+
+    currentStereo--;
+
+
+    if(
+        currentStereo < 0
+    ) {
+
+
+        currentStereo =
+        stereoFiles.length - 1;
+
+
     }
 
-  });
 
-  // Configura cada câmera XR para enxergar sua esfera
-  document.querySelector('a-scene')
-    .addEventListener('enter-vr', function () {
+    loadStereo(
+        currentStereo
+    );
 
-      const renderer = this.renderer;
-      const xr = renderer.xr;
 
-      setTimeout(() => {
+}
 
-        const camera =
-          this.camera;
 
-        if (!camera ||
-            !camera.cameras ||
-            camera.cameras.length < 2) return;
 
-        const leftCamera =
-          camera.cameras[0];
+/* =====================================================
+   CONFIGURAÇÃO DOS LAYERS
+===================================================== */
 
-        const rightCamera =
-          camera.cameras[1];
 
-        leftCamera.layers.enable(1);
-        leftCamera.layers.disable(2);
+scene.addEventListener(
+"loaded",
+function() {
 
-        rightCamera.layers.enable(2);
-        rightCamera.layers.disable(1);
 
-      }, 500);
+    const meshLeft =
+    sphereLeft
+    .getObject3D("mesh");
 
-    });
+
+    const meshRight =
+    sphereRight
+    .getObject3D("mesh");
+
+
+
+    /*
+    LEFT = layer 1
+    RIGHT = layer 2
+    */
+
+
+    meshLeft.layers.set(1);
+
+
+    meshRight.layers.set(2);
+
+
+
+    /*
+    primeira imagem
+    */
+
+
+    loadStereo(0);
+
+
+});
+
+
+
+/* =====================================================
+   CONFIGURAÇÃO DOS OLHOS WEBXR
+===================================================== */
+
+
+AFRAME.registerComponent(
+
+"stereo-xr",
+
+{
+
+
+tick: function() {
+
+
+    const renderer =
+    this.el.renderer;
+
+
+    if(!renderer)
+    return;
+
+
+
+    if(
+        !renderer.xr
+        .isPresenting
+    )
+    return;
+
+
+
+    const xrCamera =
+    renderer.xr.getCamera(
+        this.el.camera
+    );
+
+
+
+    if(
+        !xrCamera ||
+        !xrCamera.cameras ||
+        xrCamera.cameras.length < 2
+    )
+    return;
+
+
+
+    const leftEye =
+    xrCamera.cameras[0];
+
+
+    const rightEye =
+    xrCamera.cameras[1];
+
+
+
+    /*
+    OLHO ESQUERDO
+
+    vê apenas layer 1
+    */
+
+
+    leftEye.layers.disableAll();
+
+
+    leftEye.layers.enable(1);
+
+
+
+    /*
+    OLHO DIREITO
+
+    vê apenas layer 2
+    */
+
+
+    rightEye.layers.disableAll();
+
+
+    rightEye.layers.enable(2);
+
+
+
+}
+
+
+}
+
+);
+
+
+
+scene.setAttribute(
+    "stereo-xr",
+    ""
+);
+
+
 
 </script>
 
+
+
 </body>
+
 </html>
