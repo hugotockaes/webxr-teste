@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>WebXR 360 Stereo SBS</title>
+
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+  <script>
+    AFRAME.registerComponent('stereo-eye', {
+      schema: {
+        eye: {type: 'string', default: 'left'}
+      },
+
+      init: function () {
+        this.el.addEventListener('materialtextureloaded', () => {
+          const mesh = this.el.getObject3D('mesh');
+          if (!mesh) return;
+
+          const material = mesh.material;
+          const texture = material.map;
+
+          if (!texture) return;
+
+          texture.wrapS = THREE.RepeatWrapping;
+          texture.wrapT = THREE.ClampToEdgeWrapping;
+
+          texture.repeat.set(0.5, 1);
+
+          if (this.data.eye === 'left') {
+            texture.offset.set(0, 0);
+          } else {
+            texture.offset.set(0.5, 0);
+          }
+
+          texture.needsUpdate = true;
+        });
+      }
+    });
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+  </style>
+</head>
+
+<body>
+
+<a-scene
+  renderer="antialias: true"
+  vr-mode-ui="enabled: true"
+  background="color: black">
+
+  <a-assets>
+    <img
+      id="stereo360"
+      src="stereo.jpg"
+      crossorigin="anonymous">
+  </a-assets>
+
+  <!-- OLHO ESQUERDO -->
+  <a-sphere
+    id="sphereLeft"
+    radius="10"
+    scale="-1 1 1"
+    segments-width="96"
+    segments-height="64"
+    material="
+      src: #stereo360;
+      side: back;
+      shader: flat;
+    "
+    stereo-eye="eye: left">
+  </a-sphere>
+
+  <!-- OLHO DIREITO -->
+  <a-sphere
+    id="sphereRight"
+    radius="10.01"
+    scale="-1 1 1"
+    segments-width="96"
+    segments-height="64"
+    material="
+      src: #stereo360;
+      side: back;
+      shader: flat;
+    "
+    stereo-eye="eye: right">
+  </a-sphere>
+
+  <a-camera
+    position="0 1.6 0"
+    look-controls="enabled: true"
+    wasd-controls="enabled: false">
+  </a-camera>
+
+</a-scene>
+
+<script>
+  const scene = document.querySelector('a-scene');
+
+  scene.addEventListener('loaded', () => {
+
+    const leftSphere =
+      document.querySelector('#sphereLeft').getObject3D('mesh');
+
+    const rightSphere =
+      document.querySelector('#sphereRight').getObject3D('mesh');
+
+    if (leftSphere) {
+      leftSphere.layers.set(1);
+    }
+
+    if (rightSphere) {
+      rightSphere.layers.set(2);
+    }
+
+  });
+
+  // Configura cada câmera XR para enxergar sua esfera
+  document.querySelector('a-scene')
+    .addEventListener('enter-vr', function () {
+
+      const renderer = this.renderer;
+      const xr = renderer.xr;
+
+      setTimeout(() => {
+
+        const camera =
+          this.camera;
+
+        if (!camera ||
+            !camera.cameras ||
+            camera.cameras.length < 2) return;
+
+        const leftCamera =
+          camera.cameras[0];
+
+        const rightCamera =
+          camera.cameras[1];
+
+        leftCamera.layers.enable(1);
+        leftCamera.layers.disable(2);
+
+        rightCamera.layers.enable(2);
+        rightCamera.layers.disable(1);
+
+      }, 500);
+
+    });
+
+</script>
+
+</body>
+</html>
