@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no"
+  />
+
+  <title>WebXR Stereo 360</title>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #status {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+
+      padding: 10px 18px;
+
+      color: white;
+      background: rgba(0, 0, 0, 0.55);
+
+      border-radius: 20px;
+
+      font-size: 14px;
+
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="status">
+    Carregando LEFT e RIGHT...
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+
+    import * as THREE from "three";
+    import { VRButton } from "three/addons/webxr/VRButton.js";
+
+    // -----------------------------------------------------
+    // CENA
+    // -----------------------------------------------------
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+
+    camera.position.set(0, 0, 0);
+
+    // Para visualização fora do VR
+    camera.layers.enable(1);
+    camera.layers.enable(2);
+
+
+    // -----------------------------------------------------
+    // RENDERER
+    // -----------------------------------------------------
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: false
+    });
+
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio, 2)
+    );
+
+    renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
+    );
+
+    renderer.xr.enabled = true;
+
+    document.body.appendChild(renderer.domElement);
+
+
+    // -----------------------------------------------------
+    // BOTÃO VR
+    // -----------------------------------------------------
+
+    const vrButton = VRButton.createButton(renderer);
+
+    document.body.appendChild(vrButton);
+
+
+    // -----------------------------------------------------
+    // CACHE BUSTER
+    // -----------------------------------------------------
+
+    // Toda vez que abrir a página,
+    // gera uma URL diferente para o Quest.
+
+    const cacheVersion = Date.now();
+
+    const LEFT_IMAGE =
+      "./left.png?v=" + cacheVersion;
+
+    const RIGHT_IMAGE =
+      "./right.png?v=" + cacheVersion;
+
+
+    // -----------------------------------------------------
+    // TEXTURE LOADER
+    // -----------------------------------------------------
+
+    const textureLoader =
+      new THREE.TextureLoader();
+
+
+    let leftLoaded = false;
+    let rightLoaded = false;
+
+
+    function updateStatus() {
+
+      if (leftLoaded && rightLoaded) {
+
+        document.getElementById("status")
+          .innerText =
+          "LEFT + RIGHT carregados ✓";
+
+        setTimeout(() => {
+
+          document.getElementById("status")
+            .style.display = "none";
+
+        }, 2000);
+
+      }
+
+    }
+
+
+    // -----------------------------------------------------
+    // GEOMETRIA 360
+    // -----------------------------------------------------
+
+    const geometry =
+      new THREE.SphereGeometry(
+        10,
+        64,
+        40
+      );
+
+    // Inverte esfera
+    // câmera fica dentro dela
+
+    geometry.scale(
+      -1,
+      1,
+      1
+    );
+
+
+    // -----------------------------------------------------
+    // LEFT
+    // -----------------------------------------------------
+
+    textureLoader.load(
+
+      LEFT_IMAGE,
+
+      function(texture) {
+
+        texture.colorSpace =
+          THREE.SRGBColorSpace;
+
+        texture.minFilter =
+          THREE.LinearFilter;
+
+        texture.magFilter =
+          THREE.LinearFilter;
+
+        texture.generateMipmaps =
+          false;
+
+
+        const material =
+          new THREE.MeshBasicMaterial({
+            map: texture
+          });
+
+
+        const sphere =
+          new THREE.Mesh(
+            geometry,
+            material
+          );
+
+
+        // Layer 1 = olho esquerdo
+
+        sphere.layers.set(1);
+
+        scene.add(sphere);
+
+
+        leftLoaded = true;
+
+        console.log(
+          "LEFT carregado"
+        );
+
+        updateStatus();
+
+      },
+
+      undefined,
+
+      function(error) {
+
+        console.error(
+          "Erro LEFT:",
+          error
+        );
+
+        document.getElementById(
+          "status"
+        ).innerText =
+          "ERRO ao carregar left.png";
+
+      }
+
+    );
+
+
+    // -----------------------------------------------------
+    // RIGHT
+    // -----------------------------------------------------
+
+    textureLoader.load(
+
+      RIGHT_IMAGE,
+
+      function(texture) {
+
+        texture.colorSpace =
+          THREE.SRGBColorSpace;
+
+        texture.minFilter =
+          THREE.LinearFilter;
+
+        texture.magFilter =
+          THREE.LinearFilter;
+
+        texture.generateMipmaps =
+          false;
+
+
+        const material =
+          new THREE.MeshBasicMaterial({
+            map: texture
+          });
+
+
+        const sphere =
+          new THREE.Mesh(
+            geometry,
+            material
+          );
+
+
+        // Layer 2 = olho direito
+
+        sphere.layers.set(2);
+
+        scene.add(sphere);
+
+
+        rightLoaded = true;
+
+        console.log(
+          "RIGHT carregado"
+        );
+
+        updateStatus();
+
+      },
+
+      undefined,
+
+      function(error) {
+
+        console.error(
+          "Erro RIGHT:",
+          error
+        );
+
+        document.getElementById(
+          "status"
+        ).innerText =
+          "ERRO ao carregar right.png";
+
+      }
+
+    );
+
+
+    // -----------------------------------------------------
+    // LOOP
+    // -----------------------------------------------------
+
+    renderer.setAnimationLoop(
+      function() {
+
+        renderer.render(
+          scene,
+          camera
+        );
+
+      }
+    );
+
+
+    // -----------------------------------------------------
+    // RESIZE
+    // -----------------------------------------------------
+
+    window.addEventListener(
+      "resize",
+      function() {
+
+        camera.aspect =
+          window.innerWidth /
+          window.innerHeight;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+          window.innerWidth,
+          window.innerHeight
+        );
+
+      }
+    );
+
+  </script>
+
+</body>
+
+</html>
