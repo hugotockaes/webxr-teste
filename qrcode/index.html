@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>VR Experience — Leitor de Card</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: #000;
+      color: #fff;
+
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 700px;
+
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 20px;
+      color: #aaa;
+      line-height: 1.5;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 20px 40px;
+
+      border: 0;
+      border-radius: 16px;
+
+      background: #fff;
+      color: #000;
+
+      font-size: 24px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #ddd;
+    }
+
+    #reader {
+      width: 100%;
+      margin-top: 30px;
+
+      overflow: hidden;
+      border-radius: 20px;
+
+      display: none;
+    }
+
+    #resultado {
+      margin-top: 30px;
+
+      padding: 25px;
+
+      border: 1px solid #444;
+      border-radius: 16px;
+
+      background: #111;
+
+      font-size: 22px;
+
+      display: none;
+    }
+
+    .sucesso {
+      font-size: 16px;
+      color: #7cff7c;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    #conteudoQR {
+      margin-top: 12px;
+      font-size: 28px;
+      font-weight: bold;
+      word-break: break-word;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+
+    <h1>VR EXPERIENCE</h1>
+
+    <p id="instrucao">
+      Pegue um card e pressione o botão abaixo.
+    </p>
+
+    <button id="btnLer">
+      LER CARD
+    </button>
+
+    <div id="reader"></div>
+
+    <div id="resultado">
+
+      <div class="sucesso">
+        CARD IDENTIFICADO
+      </div>
+
+      <div id="conteudoQR"></div>
+
+    </div>
+
+  </main>
+
+
+  <!-- Biblioteca responsável pela leitura do QR Code -->
+  <script
+    src="https://unpkg.com/html5-qrcode"
+    type="text/javascript">
+  </script>
+
+
+  <script>
+
+    const botao = document.getElementById("btnLer");
+    const reader = document.getElementById("reader");
+    const resultado = document.getElementById("resultado");
+    const conteudoQR = document.getElementById("conteudoQR");
+    const instrucao = document.getElementById("instrucao");
+
+    let scanner = null;
+
+
+    botao.addEventListener("click", iniciarScanner);
+
+
+    async function iniciarScanner() {
+
+      botao.style.display = "none";
+
+      reader.style.display = "block";
+
+      instrucao.innerText =
+        "Aponte a câmera para o QR Code do card.";
+
+      scanner = new Html5Qrcode("reader");
+
+      try {
+
+        const cameras =
+          await Html5Qrcode.getCameras();
+
+        console.log("Câmeras encontradas:", cameras);
+
+
+        if (!cameras || cameras.length === 0) {
+
+          throw new Error(
+            "Nenhuma câmera foi disponibilizada pelo navegador."
+          );
+
+        }
+
+
+        /*
+          Primeiro tentamos solicitar uma câmera
+          voltada para o ambiente.
+
+          Em celular normalmente é a câmera traseira.
+
+          No Quest este é justamente o ponto
+          que queremos testar.
+        */
+
+        await scanner.start(
+
+          {
+            facingMode: {
+              ideal: "environment"
+            }
+          },
+
+          {
+            fps: 10,
+
+            qrbox: {
+              width: 280,
+              height: 280
+            }
+          },
+
+          qrCodeLido,
+
+          erroLeitura
+
+        );
+
+      }
+
+      catch (erro) {
+
+        console.error(erro);
+
+        reader.style.display = "none";
+
+        resultado.style.display = "block";
+
+        conteudoQR.innerHTML =
+          "Não foi possível acessar uma câmera.<br><br>" +
+          "<small>" +
+          erro.message +
+          "</small>";
+
+        instrucao.innerText =
+          "Teste de acesso à câmera.";
+
+        botao.innerText =
+          "TENTAR NOVAMENTE";
+
+        botao.style.display =
+          "inline-block";
+
+      }
+
+    }
+
+
+
+    async function qrCodeLido(texto) {
+
+      console.log(
+        "QR identificado:",
+        texto
+      );
+
+
+      /*
+        Paramos a câmera assim que
+        encontramos um QR válido.
+      */
+
+      try {
+
+        if (scanner) {
+
+          await scanner.stop();
+
+          await scanner.clear();
+
+        }
+
+      }
+
+      catch (erro) {
+
+        console.log(
+          "Erro ao encerrar scanner:",
+          erro
+        );
+
+      }
+
+
+      reader.style.display =
+        "none";
+
+      resultado.style.display =
+        "block";
+
+
+      conteudoQR.innerText =
+        texto;
+
+
+      instrucao.innerText =
+        "Leitura concluída.";
+
+
+      botao.innerText =
+        "LER OUTRO CARD";
+
+      botao.style.display =
+        "inline-block";
+
+    }
+
+
+
+    function erroLeitura(erro) {
+
+      /*
+        Essa função é chamada constantemente
+        enquanto não existe QR na imagem.
+
+        Portanto não precisamos mostrar
+        esses erros na interface.
+      */
+
+    }
+
+  </script>
+
+</body>
+</html>
