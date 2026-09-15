@@ -1,328 +1,663 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<meta charset="UTF-8">
 
-  <title>VR Experience — Leitor de Card</title>
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
+<title>VR Experience — QR Scanner</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #000;
+    color: white;
+
+    font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+}
+
+.container {
+
+    width: 90%;
+    max-width: 700px;
+
+    text-align: center;
+
+}
+
+h1 {
+
+    font-size: 42px;
+
+    margin-bottom: 10px;
+
+}
+
+#instrucao {
+
+    font-size: 20px;
+
+    color: #aaa;
+
+    margin-bottom: 25px;
+
+}
+
+button {
+
+    padding: 18px 40px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: white;
+    color: black;
+
+    font-size: 22px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+/* SCANNER */
+
+#scannerArea {
+
+    display: none;
+
+    margin-top: 30px;
+
+}
+
+
+.scanner {
+
+    width: 320px;
+    height: 320px;
+
+    max-width: 85vw;
+
+    margin: auto;
+
+    position: relative;
+
+    overflow: hidden;
+
+}
+
+
+/* área onde a câmera será colocada */
+
+#reader {
+
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+
+    top: 0;
+    left: 0;
+
+}
+
+
+/* deixa vídeo ocupar área */
+
+#reader video {
+
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: cover;
+
+}
+
+
+/* MOLDURA */
+
+.frame {
+
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+
+    top: 0;
+    left: 0;
+
+    z-index: 10;
+
+    pointer-events: none;
+
+}
+
+
+/* CANTOS */
+
+.corner {
+
+    position: absolute;
+
+    width: 55px;
+    height: 55px;
+
+    border-color: white;
+    border-style: solid;
+
+}
+
+.top-left {
+
+    top: 0;
+    left: 0;
+
+    border-width: 5px 0 0 5px;
+
+}
+
+.top-right {
+
+    top: 0;
+    right: 0;
+
+    border-width: 5px 5px 0 0;
+
+}
+
+.bottom-left {
+
+    bottom: 0;
+    left: 0;
+
+    border-width: 0 0 5px 5px;
+
+}
+
+.bottom-right {
+
+    bottom: 0;
+    right: 0;
+
+    border-width: 0 5px 5px 0;
+
+}
+
+
+/* LINHA DO SCANNER */
+
+.scanLine {
+
+    position: absolute;
+
+    left: 5%;
+
+    width: 90%;
+    height: 3px;
+
+    background: white;
+
+    box-shadow:
+    0 0 12px white;
+
+    animation:
+    scanning 2s linear infinite;
+
+}
+
+@keyframes scanning {
+
+    0% {
+        top: 5%;
     }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      background: #000;
-      color: #fff;
-
-      font-family: Arial, Helvetica, sans-serif;
+    50% {
+        top: 94%;
     }
 
-    .container {
-      width: 90%;
-      max-width: 700px;
-
-      text-align: center;
+    100% {
+        top: 5%;
     }
 
-    h1 {
-      font-size: 42px;
-      margin-bottom: 10px;
+}
+
+
+/* STATUS */
+
+.status {
+
+    margin-top: 25px;
+
+    font-size: 18px;
+
+    letter-spacing: 2px;
+
+}
+
+.loader {
+
+    display: inline-block;
+
+    width: 14px;
+    height: 14px;
+
+    margin-right: 10px;
+
+    border: 3px solid #555;
+
+    border-top-color: white;
+
+    border-radius: 50%;
+
+    animation:
+    loading 0.8s linear infinite;
+
+}
+
+@keyframes loading {
+
+    to {
+        transform: rotate(360deg);
     }
 
-    p {
-      font-size: 20px;
-      color: #aaa;
-      line-height: 1.5;
-    }
+}
 
-    button {
-      margin-top: 25px;
-      padding: 20px 40px;
 
-      border: 0;
-      border-radius: 16px;
+/* RESULTADO */
 
-      background: #fff;
-      color: #000;
+#resultado {
 
-      font-size: 24px;
-      font-weight: bold;
+    display: none;
 
-      cursor: pointer;
-    }
+    margin-top: 30px;
 
-    button:hover {
-      background: #ddd;
-    }
+    padding: 25px;
 
-    #reader {
-      width: 100%;
-      margin-top: 30px;
+    background: #111;
 
-      overflow: hidden;
-      border-radius: 20px;
+    border-radius: 15px;
 
-      display: none;
-    }
+}
 
-    #resultado {
-      margin-top: 30px;
+#conteudoQR {
 
-      padding: 25px;
+    margin-top: 12px;
 
-      border: 1px solid #444;
-      border-radius: 16px;
+    font-size: 26px;
 
-      background: #111;
+    font-weight: bold;
 
-      font-size: 22px;
+    word-break: break-word;
 
-      display: none;
-    }
+}
 
-    .sucesso {
-      font-size: 16px;
-      color: #7cff7c;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
+</style>
 
-    #conteudoQR {
-      margin-top: 12px;
-      font-size: 28px;
-      font-weight: bold;
-      word-break: break-word;
-    }
-  </style>
 </head>
+
 
 <body>
 
-  <main class="container">
+<div class="container">
 
-    <h1>VR EXPERIENCE</h1>
 
-    <p id="instrucao">
-      Pegue um card e pressione o botão abaixo.
-    </p>
+<h1>
+VR EXPERIENCE
+</h1>
 
-    <button id="btnLer">
-      LER CARD
-    </button>
 
-    <div id="reader"></div>
+<p id="instrucao">
 
-    <div id="resultado">
+Pegue um card e pressione o botão abaixo.
 
-      <div class="sucesso">
-        CARD IDENTIFICADO
-      </div>
+</p>
 
-      <div id="conteudoQR"></div>
 
-    </div>
+<button id="btnLer">
 
-  </main>
+LER CARD
 
+</button>
 
-  <!-- Biblioteca responsável pela leitura do QR Code -->
-  <script
-    src="https://unpkg.com/html5-qrcode"
-    type="text/javascript">
-  </script>
 
 
-  <script>
+<!-- SCANNER -->
 
-    const botao = document.getElementById("btnLer");
-    const reader = document.getElementById("reader");
-    const resultado = document.getElementById("resultado");
-    const conteudoQR = document.getElementById("conteudoQR");
-    const instrucao = document.getElementById("instrucao");
+<div id="scannerArea">
 
-    let scanner = null;
 
+<div class="scanner">
 
-    botao.addEventListener("click", iniciarScanner);
 
+<div id="reader"></div>
 
-    async function iniciarScanner() {
 
-      botao.style.display = "none";
+<div class="frame">
 
-      reader.style.display = "block";
 
-      instrucao.innerText =
-        "Aponte a câmera para o QR Code do card.";
+<div class="corner top-left"></div>
 
-      scanner = new Html5Qrcode("reader");
+<div class="corner top-right"></div>
 
-      try {
+<div class="corner bottom-left"></div>
 
-        const cameras =
-          await Html5Qrcode.getCameras();
+<div class="corner bottom-right"></div>
 
-        console.log("Câmeras encontradas:", cameras);
 
+<div class="scanLine"></div>
 
-        if (!cameras || cameras.length === 0) {
 
-          throw new Error(
-            "Nenhuma câmera foi disponibilizada pelo navegador."
-          );
+</div>
 
-        }
 
+</div>
 
-        /*
-          Primeiro tentamos solicitar uma câmera
-          voltada para o ambiente.
 
-          Em celular normalmente é a câmera traseira.
 
-          No Quest este é justamente o ponto
-          que queremos testar.
-        */
+<div class="status">
 
-        await scanner.start(
+<span class="loader"></span>
 
-          {
-            facingMode: {
-              ideal: "environment"
-            }
-          },
+<span id="statusTexto">
 
-          {
-            fps: 10,
+PROCURANDO QR CODE...
 
-            qrbox: {
-              width: 280,
-              height: 280
-            }
-          },
+</span>
 
-          qrCodeLido,
+</div>
 
-          erroLeitura
 
-        );
+</div>
 
-      }
 
-      catch (erro) {
 
-        console.error(erro);
+<!-- RESULTADO -->
 
-        reader.style.display = "none";
 
-        resultado.style.display = "block";
+<div id="resultado">
 
-        conteudoQR.innerHTML =
-          "Não foi possível acessar uma câmera.<br><br>" +
-          "<small>" +
-          erro.message +
-          "</small>";
+<div>
 
-        instrucao.innerText =
-          "Teste de acesso à câmera.";
+CARD IDENTIFICADO
 
-        botao.innerText =
-          "TENTAR NOVAMENTE";
+</div>
 
-        botao.style.display =
-          "inline-block";
+<div id="conteudoQR"></div>
 
-      }
+</div>
 
-    }
 
+</div>
 
 
-    async function qrCodeLido(texto) {
 
-      console.log(
-        "QR identificado:",
-        texto
-      );
+<script
+src="https://unpkg.com/html5-qrcode">
+</script>
 
 
-      /*
-        Paramos a câmera assim que
-        encontramos um QR válido.
-      */
 
-      try {
+<script>
 
-        if (scanner) {
 
-          await scanner.stop();
+const botao =
+document.getElementById("btnLer");
 
-          await scanner.clear();
 
-        }
+const scannerArea =
+document.getElementById("scannerArea");
 
-      }
 
-      catch (erro) {
+const resultado =
+document.getElementById("resultado");
 
-        console.log(
-          "Erro ao encerrar scanner:",
-          erro
-        );
 
-      }
+const conteudoQR =
+document.getElementById("conteudoQR");
 
 
-      reader.style.display =
-        "none";
+const instrucao =
+document.getElementById("instrucao");
 
-      resultado.style.display =
-        "block";
 
+const statusTexto =
+document.getElementById("statusTexto");
 
-      conteudoQR.innerText =
-        texto;
 
+let scanner = null;
 
-      instrucao.innerText =
-        "Leitura concluída.";
 
 
-      botao.innerText =
-        "LER OUTRO CARD";
+botao.addEventListener(
+"click",
+iniciarScanner
+);
 
-      botao.style.display =
-        "inline-block";
 
-    }
 
+async function iniciarScanner() {
 
 
-    function erroLeitura(erro) {
+botao.style.display =
+"none";
 
-      /*
-        Essa função é chamada constantemente
-        enquanto não existe QR na imagem.
 
-        Portanto não precisamos mostrar
-        esses erros na interface.
-      */
+resultado.style.display =
+"none";
 
-    }
 
-  </script>
+scannerArea.style.display =
+"block";
+
+
+instrucao.innerText =
+"Aponte para o QR Code";
+
+
+statusTexto.innerText =
+"SOLICITANDO CÂMERA...";
+
+
+try {
+
+
+scanner =
+new Html5Qrcode("reader");
+
+
+
+const cameras =
+await Html5Qrcode.getCameras();
+
+
+
+console.log(
+"Câmeras:",
+cameras
+);
+
+
+
+if (
+!cameras ||
+cameras.length === 0
+) {
+
+throw new Error(
+"Nenhuma câmera disponível."
+);
+
+}
+
+
+
+statusTexto.innerText =
+"CÂMERA ENCONTRADA — INICIANDO...";
+
+
+
+await scanner.start(
+
+
+{
+
+facingMode: {
+
+ideal:
+"environment"
+
+}
+
+},
+
+
+{
+
+fps: 10,
+
+qrbox: {
+
+width: 250,
+height: 250
+
+}
+
+},
+
+
+qrEncontrado,
+
+
+function() {
+
+statusTexto.innerText =
+"PROCURANDO QR CODE...";
+
+}
+
+
+);
+
+
+
+statusTexto.innerText =
+"PROCURANDO QR CODE...";
+
+
+}
+
+
+catch (erro) {
+
+
+console.error(
+erro
+);
+
+
+statusTexto.innerText =
+"ERRO AO ACESSAR CÂMERA";
+
+
+instrucao.innerText =
+erro.message;
+
+
+botao.innerText =
+"TENTAR NOVAMENTE";
+
+
+botao.style.display =
+"inline-block";
+
+
+}
+
+
+}
+
+
+
+async function qrEncontrado(texto) {
+
+
+statusTexto.innerText =
+"QR CODE ENCONTRADO!";
+
+
+try {
+
+
+await scanner.stop();
+
+await scanner.clear();
+
+
+}
+
+catch (erro) {
+
+console.log(
+erro
+);
+
+}
+
+
+
+scannerArea.style.display =
+"none";
+
+
+resultado.style.display =
+"block";
+
+
+conteudoQR.innerText =
+texto;
+
+
+instrucao.innerText =
+"Leitura concluída";
+
+
+botao.innerText =
+"LER OUTRO CARD";
+
+
+botao.style.display =
+"inline-block";
+
+
+}
+
+
+</script>
+
 
 </body>
+
 </html>
