@@ -12,54 +12,7 @@
   <title>Geek da Quebrada — Galeria MR</title>
 
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-
-  <script>
-    AFRAME.registerComponent('pinch-button-click', {
-      schema: { distance: { default: 0.16 } },
-
-      init: function () {
-        this.onPinch = this.onPinch.bind(this);
-        this.el.addEventListener('pinchstarted', this.onPinch);
-      },
-
-      remove: function () {
-        this.el.removeEventListener('pinchstarted', this.onPinch);
-      },
-
-      onPinch: function (evt) {
-        const p = evt.detail && evt.detail.position;
-        if (!p) return;
-
-        const pinch = new THREE.Vector3(p.x, p.y, p.z);
-        const botoes = document.querySelectorAll('.botao-universo');
-
-        let alvo = null;
-        let menor = this.data.distance;
-
-        botoes.forEach((botao) => {
-          const pos = new THREE.Vector3();
-          botao.object3D.getWorldPosition(pos);
-          const d = pinch.distanceTo(pos);
-
-          if (d < menor) {
-            menor = d;
-            alvo = botao;
-          }
-        });
-
-        if (alvo) {
-          alvo.emit('click', { source: 'hand-pinch' }, false);
-
-          const escalaOriginal = alvo.object3D.scale.clone();
-          alvo.object3D.scale.set(0.82, 0.82, 0.82);
-          setTimeout(() => alvo.object3D.scale.copy(escalaOriginal), 120);
-        }
-      }
-    });
-  </script>
-
-
-  <style>
+<style>
     body {
       margin: 0;
       background: #111;
@@ -430,23 +383,7 @@
       <a-text value="360°" align="center" width="0.48" color="#FFFFFF" position="0 0 0.004" onclick="toggleFundo(6)"></a-text>
     </a-entity>
   </a-entity>
-
-
-
-  <!-- MÃOS: aproxime a mão do botão e faça o gesto de pinça -->
-  <a-entity
-    id="maoEsquerda"
-    hand-tracking-controls="hand: left; modelStyle: mesh"
-    pinch-button-click="distance: 0.16">
-  </a-entity>
-
-  <a-entity
-    id="maoDireita"
-    hand-tracking-controls="hand: right; modelStyle: mesh"
-    pinch-button-click="distance: 0.16">
-  </a-entity>
-
-  <!-- ==================================================
+<!-- ==================================================
        CÂMERA
        ================================================== -->
 
@@ -454,7 +391,7 @@
     position="0 1.6 0"
     wasd-controls-enabled="false">
 
-    <!-- Mira: clique/gatilho nos botões (também funciona com pinça das mãos) -->
+    <!-- Mira: fixe o cursor no botão por 2 segundos -->
     <a-cursor
       id="mira"
       fuse="false"
@@ -470,7 +407,7 @@
 
 
 <!-- ==================================================
-     INTERAÇÃO POR CLIQUE / MÃOS
+     INTERAÇÃO POR CURSOR — 2 SEGUNDOS
      Botões 360° = ativa/troca o fundo com fade suave
      Botão MR    = retorna ao passthrough com fade suave
      Os painéis permanecem visíveis o tempo todo.
