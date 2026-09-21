@@ -4,7 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>Teste MR — Menu de Cores</title>
-<script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+<script src="https://aframe.io/releases/1.7.1/aframe.min.js">
+// As imagens m2..m6 também são alvos do olhar.
+// Ao mirar, elas dão um pequeno zoom; ao completar 2s, acionam a cor correspondente.
+const thumbColors = ['#FF7A00','#E52323','#22B14C','#1677FF','#7A35C8'];
+document.querySelectorAll('.thumb').forEach((thumb, i) => {
+  thumb.addEventListener('click', () => {
+    const alvo = [...document.querySelectorAll('.cor-btn')]
+      .find(b => b.dataset.cor === thumbColors[i]);
+    if (alvo) alvo.click();
+  });
+});
+
+</script>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
 </style>
@@ -20,6 +32,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
   <!-- Esfera que simula o futuro fundo 360 -->
   <a-assets>
   <img id="menuImg" src="./menu.png" crossorigin="anonymous">
+  <img id="m2" src="./m2.png" crossorigin="anonymous">
+  <img id="m3" src="./m3.png" crossorigin="anonymous">
+  <img id="m4" src="./m4.png" crossorigin="anonymous">
+  <img id="m5" src="./m5.png" crossorigin="anonymous">
+  <img id="m6" src="./m6.png" crossorigin="anonymous">
 </a-assets>
 
 <a-sky id="fundo" color="#000000" visible="false"></a-sky>
@@ -36,6 +53,43 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
       height="0.90"
       position="0 0 -0.02"
       material="shader: flat; transparent: true">
+    </a-plane>
+
+
+    <!-- IMAGENS DOS BOTÕES: m1 fica vazio nesta etapa -->
+    <a-plane class="thumb" src="#m2" width=".39" height=".34"
+      position="0 .20 0.006"
+      material="shader:flat; transparent:true"
+      animation__hover="property:scale; startEvents:mouseenter; to:1.08 1.08 1.08; dur:160; easing:easeOutQuad"
+      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:160; easing:easeOutQuad">
+    </a-plane>
+
+    <a-plane class="thumb" src="#m3" width=".39" height=".34"
+      position=".42 .20 0.006"
+      material="shader:flat; transparent:true"
+      animation__hover="property:scale; startEvents:mouseenter; to:1.08 1.08 1.08; dur:160; easing:easeOutQuad"
+      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:160; easing:easeOutQuad">
+    </a-plane>
+
+    <a-plane class="thumb" src="#m4" width=".39" height=".34"
+      position="-.42 -.20 0.006"
+      material="shader:flat; transparent:true"
+      animation__hover="property:scale; startEvents:mouseenter; to:1.08 1.08 1.08; dur:160; easing:easeOutQuad"
+      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:160; easing:easeOutQuad">
+    </a-plane>
+
+    <a-plane class="thumb" src="#m5" width=".39" height=".34"
+      position="0 -.20 0.006"
+      material="shader:flat; transparent:true"
+      animation__hover="property:scale; startEvents:mouseenter; to:1.08 1.08 1.08; dur:160; easing:easeOutQuad"
+      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:160; easing:easeOutQuad">
+    </a-plane>
+
+    <a-plane class="thumb" src="#m6" width=".39" height=".34"
+      position=".42 -.20 0.006"
+      material="shader:flat; transparent:true"
+      animation__hover="property:scale; startEvents:mouseenter; to:1.08 1.08 1.08; dur:160; easing:easeOutQuad"
+      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:160; easing:easeOutQuad">
     </a-plane>
 
     <!-- ÁREAS INTERATIVAS SOBRE OS 6 ESPAÇOS DO menu.png -->
@@ -72,7 +126,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
     <!-- cursor por olhar: 2 segundos sobre o botão = clique; não usa controle -->
     <a-entity
       cursor="rayOrigin:entity; fuse:true; fuseTimeout:2000"
-      raycaster="objects:.cor-btn; far:8"
+      raycaster="objects:.cor-btn, .thumb; far:8"
       position="0 0 -0.8"
       geometry="primitive:ring; radiusInner:.004; radiusOuter:.007"
       material="color:white; shader:flat"
