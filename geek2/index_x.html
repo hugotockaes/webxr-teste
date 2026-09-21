@@ -26,25 +26,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
     <img id="m4" src="./m4.png" crossorigin="anonymous">
     <img id="m5" src="./m5.png" crossorigin="anonymous">
     <img id="m6" src="./m6.png" crossorigin="anonymous">
-    <img id="fundo2a" src="./fundo2a.png" crossorigin="anonymous">
-    <img id="fundo2b" src="./fundo2b.png" crossorigin="anonymous">
-    <img id="fundo3a" src="./fundo3a.png" crossorigin="anonymous">
-    <img id="fundo3b" src="./fundo3b.png" crossorigin="anonymous">
-    <img id="fundo4a" src="./fundo4a.png" crossorigin="anonymous">
-    <img id="fundo4b" src="./fundo4b.png" crossorigin="anonymous">
-    <img id="fundo5a" src="./fundo5a.png" crossorigin="anonymous">
-    <img id="fundo5b" src="./fundo5b.png" crossorigin="anonymous">
-    <img id="fundo6a" src="./fundo6a.png" crossorigin="anonymous">
-    <img id="fundo6b" src="./fundo6b.png" crossorigin="anonymous">
+    <img id="fundo2" src="./fundo2.png" crossorigin="anonymous">
+    <img id="fundo3" src="./fundo3.png" crossorigin="anonymous">
+    <img id="fundo4" src="./fundo4.png" crossorigin="anonymous">
+    <img id="fundo5" src="./fundo5.png" crossorigin="anonymous">
+    <img id="fundo6" src="./fundo6.png" crossorigin="anonymous">
   </a-assets>
 
   <!-- O fundo 360 é carregado somente quando o visitante escolhe uma opção -->
-  <!-- Duas camadas 360: B fica atrás e gira; A fica por cima com transparência -->
-  <a-sky id="fundoB" radius="500" visible="false"
-    material="shader:flat; opacity:1"
-    animation__giro="property:rotation; to:0 360 0; dur:180000; loop:true; easing:linear"></a-sky>
-  <a-sky id="fundoA" radius="499" visible="false"
-    material="shader:flat; transparent:true; alphaTest:0.01; opacity:1"></a-sky>
+  <a-sky id="fundo" visible="false" material="shader:flat; opacity:1"></a-sky>
 
   <!-- MENU FIXO NO AMBIENTE -->
   <a-entity id="menuFixo" position="0 1.55 -2.00" scale="0.5 0.5 0.5">
@@ -110,8 +100,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
 </a-scene>
 
 <script>
-const fundoA = document.getElementById('fundoA');
-const fundoB = document.getElementById('fundoB');
+const fundo = document.getElementById('fundo');
 let atual = null;
 
 function selecionarNeon(id) {
@@ -120,50 +109,51 @@ function selecionarNeon(id) {
     g.setAttribute('material', 'opacity', 0);
     g.setAttribute('scale', '1 1 1');
   });
+
   const glow = document.getElementById('glow' + id);
   if (!glow) return;
-  glow.setAttribute('material', 'opacity', 0.95);
-  glow.setAttribute('animation__pulse',
-    'property:scale; from:1 1 1; to:1.045 1.045 1.045; dir:alternate; loop:true; dur:650; easing:easeInOutSine');
-}
 
-function aplicarCamadas(id) {
-  fundoB.setAttribute('material', 'src', '#fundo' + id + 'b');
-  fundoA.setAttribute('material', 'src', '#fundo' + id + 'a');
-  fundoA.setAttribute('material', 'transparent', true);
-  fundoA.setAttribute('material', 'alphaTest', 0.01);
-  fundoA.setAttribute('visible', true);
-  fundoB.setAttribute('visible', true);
+  glow.setAttribute('material', 'opacity', 0.95);
+  glow.setAttribute(
+    'animation__pulse',
+    'property:scale; from:1 1 1; to:1.045 1.045 1.045; dir:alternate; loop:true; dur:650; easing:easeInOutSine'
+  );
 }
 
 function carregar360(id) {
   if (id === 1 || id === atual) return;
+
   selecionarNeon(id);
 
-  [fundoA, fundoB].forEach(f => {
-    f.removeAttribute('animation__out');
-    f.removeAttribute('animation__in');
-  });
+  // Usa diretamente os assets do A-Frame. Sem XHR, Blob ou barra de carregamento.
+  fundo.removeAttribute('animation__out');
+  fundo.removeAttribute('animation__in');
 
-  if (atual === null) {
-    aplicarCamadas(id);
-    fundoA.setAttribute('material', 'opacity', 0);
-    fundoB.setAttribute('material', 'opacity', 0);
-    fundoA.setAttribute('animation__in', 'property:material.opacity; from:0; to:1; dur:450; easing:easeInOutQuad');
-    fundoB.setAttribute('animation__in', 'property:material.opacity; from:0; to:1; dur:450; easing:easeInOutQuad');
+  if (!fundo.getAttribute('visible')) {
+    fundo.setAttribute('material', 'src', '#fundo' + id);
+    fundo.setAttribute('material', 'opacity', 0);
+    fundo.setAttribute('visible', true);
+    fundo.setAttribute(
+      'animation__in',
+      'property:material.opacity; from:0; to:1; dur:450; easing:easeInOutQuad'
+    );
     atual = id;
     return;
   }
 
-  fundoA.setAttribute('animation__out', 'property:material.opacity; from:1; to:0; dur:180; easing:easeInOutQuad');
-  fundoB.setAttribute('animation__out', 'property:material.opacity; from:1; to:0; dur:180; easing:easeInOutQuad');
+  fundo.setAttribute(
+    'animation__out',
+    'property:material.opacity; from:1; to:0; dur:180; easing:easeInOutQuad'
+  );
 
   setTimeout(() => {
-    aplicarCamadas(id);
-    fundoA.setAttribute('material', 'opacity', 0);
-    fundoB.setAttribute('material', 'opacity', 0);
-    fundoA.setAttribute('animation__in', 'property:material.opacity; from:0; to:1; dur:450; easing:easeInOutQuad');
-    fundoB.setAttribute('animation__in', 'property:material.opacity; from:0; to:1; dur:450; easing:easeInOutQuad');
+    fundo.removeAttribute('animation__out');
+    fundo.setAttribute('material', 'src', '#fundo' + id);
+    fundo.setAttribute('material', 'opacity', 0);
+    fundo.setAttribute(
+      'animation__in',
+      'property:material.opacity; from:0; to:1; dur:450; easing:easeInOutQuad'
+    );
     atual = id;
   }, 190);
 }
