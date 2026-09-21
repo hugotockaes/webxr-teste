@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-  <title>Galeria WebXR MR</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no"
+  >
+
+  <title>Galeria MR Compacta</title>
 
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
 
@@ -16,236 +20,301 @@
       font-family: Arial, sans-serif;
     }
 
-    #info {
+    #status {
       position: fixed;
-      top: 20px;
+      top: 15px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 999;
-      background: rgba(0,0,0,.75);
-      color: white;
+      z-index: 9999;
+
       padding: 12px 18px;
       border-radius: 12px;
+
+      background: rgba(0,0,0,.80);
+      color: white;
+
+      font-size: 14px;
       text-align: center;
       pointer-events: none;
     }
   </style>
 </head>
 
+
 <body>
 
-<div id="info">
-  Galeria MR — entre em AR para visualizar os painéis
+<div id="status">
+  Verificando imagens...
 </div>
 
+
 <a-scene
+
   webxr="
     requiredFeatures: local-floor;
     optionalFeatures: bounded-floor, hand-tracking;
     referenceSpaceType: local-floor;
-    overlayElement: #info;
+    overlayElement: #status;
   "
+
   xr-mode-ui="
     enabled: true;
     XRMode: ar;
   "
+
   renderer="
     antialias: true;
     alpha: true;
     colorManagement: true;
   "
-  background="transparent: true">
 
-  <!-- =========================
-       ARQUIVOS
-       ========================= -->
+  background="transparent: true"
+>
 
-  <a-assets>
 
-    <img id="painel01" src="painel01.png">
-    <img id="painel02" src="painel02.png">
-    <img id="painel03" src="painel03.png">
+  <!-- ==================================================
+       IMAGENS
+       ================================================== -->
 
-    <img id="painel04" src="painel04.png">
-    <img id="painel05" src="painel05.png">
-    <img id="painel06" src="painel06.png">
+  <a-assets timeout="10000">
+
+    <img id="p1a" src="./painel1a.png" crossorigin="anonymous">
+    <img id="p1b" src="./painel1b.png" crossorigin="anonymous">
+
+    <img id="p2a" src="./painel2a.png" crossorigin="anonymous">
+    <img id="p2b" src="./painel2b.png" crossorigin="anonymous">
+
+    <img id="p3a" src="./painel3a.png" crossorigin="anonymous">
+    <img id="p3b" src="./painel3b.png" crossorigin="anonymous">
+
+    <img id="p4a" src="./painel4a.png" crossorigin="anonymous">
+    <img id="p4b" src="./painel4b.png" crossorigin="anonymous">
+
+    <img id="p5a" src="./painel5a.png" crossorigin="anonymous">
+    <img id="p5b" src="./painel5b.png" crossorigin="anonymous">
+
+    <img id="p6a" src="./painel6a.png" crossorigin="anonymous">
+    <img id="p6b" src="./painel6b.png" crossorigin="anonymous">
 
   </a-assets>
 
 
-  <!-- ===================================
-       GALERIA
 
-       largura painel = 1.20 m
-       altura painel  = 1.80 m
+  <!-- ==================================================
+       PAINEL 1
+       ================================================== -->
 
-       corredor ≈ 3 metros
-
-       visitante começa em:
-       x = 0
-       z = 0
-
-       galeria segue para frente (-Z)
-       =================================== -->
-
-
-  <!-- ===================================
-       LADO ESQUERDO
-       PAINÉIS 1 / 2 / 3
-       =================================== -->
-
-
-  <!-- PAINEL 1 -->
-
-  <a-entity position="-1.5 0 -2">
-
-    <!-- estrutura -->
-    <a-box
-      width="1.26"
-      height="1.86"
-      depth="0.05"
-      position="0 1.15 0"
-      color="#222222">
-    </a-box>
-
-    <!-- imagem -->
-    <a-plane
-      src="#painel01"
-      width="1.20"
-      height="1.80"
-      position="0 1.15 0.031">
-    </a-plane>
-
-  </a-entity>
-
-
-  <!-- PAINEL 2 -->
-
-  <a-entity position="-1.5 0 -4">
+  <a-entity position="-0.40 0 -1.0">
 
     <a-box
       width="1.26"
       height="1.86"
       depth="0.05"
       position="0 1.15 0"
-      color="#222222">
+      color="#222">
     </a-box>
 
+    <!-- FRENTE -->
     <a-plane
-      src="#painel02"
+      src="#p1a"
       width="1.20"
       height="1.80"
-      position="0 1.15 0.031">
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p1b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
     </a-plane>
 
   </a-entity>
 
 
-  <!-- PAINEL 3 -->
 
-  <a-entity position="-1.5 0 -6">
+  <!-- ==================================================
+       PAINEL 2
+       ================================================== -->
+
+  <a-entity position="-0.40 0 -2.0">
 
     <a-box
       width="1.26"
       height="1.86"
       depth="0.05"
       position="0 1.15 0"
-      color="#222222">
+      color="#222">
     </a-box>
 
     <a-plane
-      src="#painel03"
+      src="#p2a"
       width="1.20"
       height="1.80"
-      position="0 1.15 0.031">
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <a-plane
+      src="#p2b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
     </a-plane>
 
   </a-entity>
 
 
 
-  <!-- ===================================
-       LADO DIREITO
-       PAINÉIS 4 / 5 / 6
+  <!-- ==================================================
+       PAINEL 3
+       ================================================== -->
 
-       Rotação 180° para olharem
-       para dentro do corredor
-       =================================== -->
-
-
-  <!-- PAINEL 4 -->
-
-  <a-entity
-    position="1.5 0 -2"
-    rotation="0 180 0">
+  <a-entity position="-0.40 0 -3.0">
 
     <a-box
       width="1.26"
       height="1.86"
       depth="0.05"
       position="0 1.15 0"
-      color="#222222">
+      color="#222">
     </a-box>
 
     <a-plane
-      src="#painel04"
+      src="#p3a"
       width="1.20"
       height="1.80"
-      position="0 1.15 0.031">
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <a-plane
+      src="#p3b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
     </a-plane>
 
   </a-entity>
 
 
-  <!-- PAINEL 5 -->
 
-  <a-entity
-    position="1.5 0 -4"
-    rotation="0 180 0">
+  <!-- ==================================================
+       PAINEL 4
+       ================================================== -->
+
+  <a-entity position="0.40 0 -1.0">
 
     <a-box
       width="1.26"
       height="1.86"
       depth="0.05"
       position="0 1.15 0"
-      color="#222222">
+      color="#222">
     </a-box>
 
     <a-plane
-      src="#painel05"
+      src="#p4a"
       width="1.20"
       height="1.80"
-      position="0 1.15 0.031">
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <a-plane
+      src="#p4b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
     </a-plane>
 
   </a-entity>
 
 
-  <!-- PAINEL 6 -->
 
-  <a-entity
-    position="1.5 0 -6"
-    rotation="0 180 0">
+  <!-- ==================================================
+       PAINEL 5
+       ================================================== -->
+
+  <a-entity position="0.40 0 -2.0">
 
     <a-box
       width="1.26"
       height="1.86"
       depth="0.05"
       position="0 1.15 0"
-      color="#222222">
+      color="#222">
     </a-box>
 
     <a-plane
-      src="#painel06"
+      src="#p5a"
       width="1.20"
       height="1.80"
-      position="0 1.15 0.031">
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <a-plane
+      src="#p5b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
     </a-plane>
 
   </a-entity>
 
 
-  <!-- câmera -->
+
+  <!-- ==================================================
+       PAINEL 6
+       ================================================== -->
+
+  <a-entity position="0.40 0 -3.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <a-plane
+      src="#p6a"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <a-plane
+      src="#p6b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+
+  <!-- ==================================================
+       CÂMERA
+       ================================================== -->
 
   <a-camera
     position="0 1.6 0"
@@ -254,6 +323,107 @@
 
 
 </a-scene>
+
+
+
+<!-- ==================================================
+     TESTE AUTOMÁTICO DAS IMAGENS
+     ================================================== -->
+
+<script>
+
+const arquivos = [
+  "painel1a.png",
+  "painel1b.png",
+
+  "painel2a.png",
+  "painel2b.png",
+
+  "painel3a.png",
+  "painel3b.png",
+
+  "painel4a.png",
+  "painel4b.png",
+
+  "painel5a.png",
+  "painel5b.png",
+
+  "painel6a.png",
+  "painel6b.png"
+];
+
+
+let carregadas = 0;
+let erros = [];
+
+
+arquivos.forEach(function(arquivo) {
+
+  const imagem = new Image();
+
+
+  imagem.onload = function() {
+
+    carregadas++;
+
+    atualizarStatus();
+
+  };
+
+
+  imagem.onerror = function() {
+
+    erros.push(arquivo);
+
+    atualizarStatus();
+
+  };
+
+
+  imagem.src = "./" + arquivo;
+
+});
+
+
+function atualizarStatus() {
+
+  const totalProcessado =
+    carregadas + erros.length;
+
+
+  if(totalProcessado === arquivos.length) {
+
+    const status =
+      document.getElementById("status");
+
+
+    if(erros.length === 0) {
+
+      status.innerHTML =
+        "✓ 12 imagens carregadas — Galeria MR pronta";
+
+      setTimeout(function() {
+
+        status.style.display = "none";
+
+      }, 3000);
+
+    }
+
+    else {
+
+      status.innerHTML =
+        "ERRO: arquivos não encontrados:<br>" +
+        erros.join("<br>");
+
+    }
+
+  }
+
+}
+
+</script>
+
 
 </body>
 </html>
