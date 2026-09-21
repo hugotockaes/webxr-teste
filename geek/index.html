@@ -106,7 +106,7 @@
   </a-assets>
 
   <!-- Fundo 360: invisível = passthrough / realidade mista -->
-  <a-sky id="fundo360" visible="false" rotation="0 -90 0"></a-sky>
+  <a-sky id="fundo360" visible="false" rotation="0 -90 0" material="transparent: true; opacity: 0"></a-sky>
 
 
   <!-- ==================================================
@@ -146,8 +146,6 @@
     <!-- FRENTE -->
     <a-plane
       src="#p1a"
-      class="gaze-panel"
-      gaze-universo="painel: 1"
       width="1.20"
       height="1.80"
       position="0 1.15 0.031"
@@ -157,8 +155,6 @@
     <!-- VERSO -->
     <a-plane
       src="#p1b"
-      class="gaze-panel"
-      gaze-universo="painel: 1"
       width="1.20"
       height="1.80"
       position="0 1.15 -0.031"
@@ -166,6 +162,13 @@
       material="side: front">
     </a-plane>
 
+
+    <!-- BOTÃO INTERATIVO -->
+    <a-entity position="0.78 1.15 0.07">
+      <a-circle class="botao-universo" radius="0.12" color="#111" material="shader: flat; opacity: 0.92" onclick="voltarMR()"></a-circle>
+      <a-ring radius-inner="0.105" radius-outer="0.12" color="#FFFFFF" material="shader: flat" onclick="voltarMR()"></a-ring>
+      <a-text value="MR" align="center" width="0.75" color="#FFFFFF" position="0 0 0.006" onclick="voltarMR()"></a-text>
+    </a-entity>
   </a-entity>
 
 
@@ -187,8 +190,6 @@
     <!-- FRENTE -->
     <a-plane
       src="#p2a"
-      class="gaze-panel"
-      gaze-universo="painel: 2"
       width="1.20"
       height="1.80"
       position="0 1.15 0.031"
@@ -198,8 +199,6 @@
     <!-- VERSO -->
     <a-plane
       src="#p2b"
-      class="gaze-panel"
-      gaze-universo="painel: 2"
       width="1.20"
       height="1.80"
       position="0 1.15 -0.031"
@@ -207,6 +206,13 @@
       material="side: front">
     </a-plane>
 
+
+    <!-- BOTÃO INTERATIVO -->
+    <a-entity position="0.78 1.15 0.07">
+      <a-circle class="botao-universo" radius="0.12" color="#111" material="shader: flat; opacity: 0.92" onclick="toggleFundo(2)"></a-circle>
+      <a-ring radius-inner="0.105" radius-outer="0.12" color="#FFFFFF" material="shader: flat" onclick="toggleFundo(2)"></a-ring>
+      <a-text value="360°" align="center" width="0.75" color="#FFFFFF" position="0 0 0.006" onclick="toggleFundo(2)"></a-text>
+    </a-entity>
   </a-entity>
 
 
@@ -228,8 +234,6 @@
     <!-- FRENTE -->
     <a-plane
       src="#p3a"
-      class="gaze-panel"
-      gaze-universo="painel: 3"
       width="1.20"
       height="1.80"
       position="0 1.15 0.031"
@@ -239,8 +243,6 @@
     <!-- VERSO -->
     <a-plane
       src="#p3b"
-      class="gaze-panel"
-      gaze-universo="painel: 3"
       width="1.20"
       height="1.80"
       position="0 1.15 -0.031"
@@ -248,6 +250,13 @@
       material="side: front">
     </a-plane>
 
+
+    <!-- BOTÃO INTERATIVO -->
+    <a-entity position="0.78 1.15 0.07">
+      <a-circle class="botao-universo" radius="0.12" color="#111" material="shader: flat; opacity: 0.92" onclick="toggleFundo(3)"></a-circle>
+      <a-ring radius-inner="0.105" radius-outer="0.12" color="#FFFFFF" material="shader: flat" onclick="toggleFundo(3)"></a-ring>
+      <a-text value="360°" align="center" width="0.75" color="#FFFFFF" position="0 0 0.006" onclick="toggleFundo(3)"></a-text>
+    </a-entity>
   </a-entity>
 
 
@@ -269,8 +278,6 @@
     <!-- FRENTE -->
     <a-plane
       src="#p4a"
-      class="gaze-panel"
-      gaze-universo="painel: 4"
       width="1.20"
       height="1.80"
       position="0 1.15 0.031"
@@ -280,8 +287,6 @@
     <!-- VERSO -->
     <a-plane
       src="#p4b"
-      class="gaze-panel"
-      gaze-universo="painel: 4"
       width="1.20"
       height="1.80"
       position="0 1.15 -0.031"
@@ -289,6 +294,13 @@
       material="side: front">
     </a-plane>
 
+
+    <!-- BOTÃO INTERATIVO -->
+    <a-entity position="0.78 1.15 0.07">
+      <a-circle class="botao-universo" radius="0.12" color="#111" material="shader: flat; opacity: 0.92" onclick="toggleFundo(4)"></a-circle>
+      <a-ring radius-inner="0.105" radius-outer="0.12" color="#FFFFFF" material="shader: flat" onclick="toggleFundo(4)"></a-ring>
+      <a-text value="360°" align="center" width="0.75" color="#FFFFFF" position="0 0 0.006" onclick="toggleFundo(4)"></a-text>
+    </a-entity>
   </a-entity>
 
 
@@ -310,8 +322,6 @@
     <!-- FRENTE -->
     <a-plane
       src="#p5a"
-      class="gaze-panel"
-      gaze-universo="painel: 5"
       width="1.20"
       height="1.80"
       position="0 1.15 0.031"
@@ -321,8 +331,6 @@
     <!-- VERSO -->
     <a-plane
       src="#p5b"
-      class="gaze-panel"
-      gaze-universo="painel: 5"
       width="1.20"
       height="1.80"
       position="0 1.15 -0.031"
@@ -330,6 +338,13 @@
       material="side: front">
     </a-plane>
 
+
+    <!-- BOTÃO INTERATIVO -->
+    <a-entity position="0.78 1.15 0.07">
+      <a-circle class="botao-universo" radius="0.12" color="#111" material="shader: flat; opacity: 0.92" onclick="toggleFundo(5)"></a-circle>
+      <a-ring radius-inner="0.105" radius-outer="0.12" color="#FFFFFF" material="shader: flat" onclick="toggleFundo(5)"></a-ring>
+      <a-text value="360°" align="center" width="0.75" color="#FFFFFF" position="0 0 0.006" onclick="toggleFundo(5)"></a-text>
+    </a-entity>
   </a-entity>
 
 
@@ -351,8 +366,6 @@
     <!-- FRENTE -->
     <a-plane
       src="#p6a"
-      class="gaze-panel"
-      gaze-universo="painel: 6"
       width="1.20"
       height="1.80"
       position="0 1.15 0.031"
@@ -362,8 +375,6 @@
     <!-- VERSO -->
     <a-plane
       src="#p6b"
-      class="gaze-panel"
-      gaze-universo="painel: 6"
       width="1.20"
       height="1.80"
       position="0 1.15 -0.031"
@@ -371,6 +382,13 @@
       material="side: front">
     </a-plane>
 
+
+    <!-- BOTÃO INTERATIVO -->
+    <a-entity position="0.78 1.15 0.07">
+      <a-circle class="botao-universo" radius="0.12" color="#111" material="shader: flat; opacity: 0.92" onclick="toggleFundo(6)"></a-circle>
+      <a-ring radius-inner="0.105" radius-outer="0.12" color="#FFFFFF" material="shader: flat" onclick="toggleFundo(6)"></a-ring>
+      <a-text value="360°" align="center" width="0.75" color="#FFFFFF" position="0 0 0.006" onclick="toggleFundo(6)"></a-text>
+    </a-entity>
   </a-entity>
 
 
@@ -382,13 +400,13 @@
     position="0 1.6 0"
     wasd-controls-enabled="false">
 
-    <!-- Mira central: 3 s para ativar o universo -->
+    <!-- Mira: clique/gatilho nos botões -->
     <a-cursor
       id="mira"
       fuse="false"
-      raycaster="objects: .gaze-panel; far: 20"
+      raycaster="objects: .botao-universo; far: 20"
       geometry="primitive: ring; radiusInner: 0.007; radiusOuter: 0.011"
-      material="color: white; shader: flat; opacity: 0.75">
+      material="color: white; shader: flat; opacity: 0.80">
     </a-cursor>
 
   </a-camera>
@@ -398,83 +416,95 @@
 
 
 <!-- ==================================================
-     INTERAÇÃO POR OLHAR
-     3 s  = ativa o universo do painel
-     12 s = volta à realidade mista
+     INTERAÇÃO POR CLIQUE
+     Botões 360° = ativa/troca o fundo com fade suave
+     Botão MR    = retorna ao passthrough com fade suave
+     Os painéis permanecem visíveis o tempo todo.
      ================================================== -->
 
 <script>
-AFRAME.registerComponent('gaze-universo', {
-  schema: { painel: {type: 'int'} },
+let fundoAtivo = null;
+let transicaoEmCurso = false;
 
-  init: function () {
-    this.timer3 = null;
-    this.timer12 = null;
-    this.olhando = false;
+function fadeSky(opacidadeInicial, opacidadeFinal, duracao, aoTerminar) {
+  const sky = document.getElementById('fundo360');
+  const inicio = performance.now();
 
-    this.el.addEventListener('raycaster-intersected', () => {
-      if (this.olhando) return;
-      this.olhando = true;
-
-      const painel = this.data.painel;
-      const status = document.getElementById('status');
-      status.style.display = 'block';
-      status.innerHTML = painel === 1
-        ? 'Continue olhando… 3 s para realidade mista'
-        : 'Continue olhando… 3 s para entrar no universo do painel ' + painel;
-
-      this.timer3 = setTimeout(() => {
-        if (!this.olhando) return;
-        if (painel === 1) {
-          voltarMR();
-        } else {
-          ativarFundo(painel);
-        }
-      }, 3000);
-
-      this.timer12 = setTimeout(() => {
-        if (!this.olhando) return;
-        voltarMR();
-        status.style.display = 'block';
-        status.innerHTML = 'Realidade mista restaurada';
-        setTimeout(() => { status.style.display = 'none'; }, 1800);
-      }, 12000);
-    });
-
-    this.el.addEventListener('raycaster-intersected-cleared', () => {
-      this.olhando = false;
-      clearTimeout(this.timer3);
-      clearTimeout(this.timer12);
-      const status = document.getElementById('status');
-      if (status.innerHTML.indexOf('carregadas') === -1) {
-        status.style.display = 'none';
-      }
-    });
+  function quadro(agora) {
+    const progresso = Math.min((agora - inicio) / duracao, 1);
+    // suavização ease-in-out
+    const suave = progresso < 0.5
+      ? 2 * progresso * progresso
+      : 1 - Math.pow(-2 * progresso + 2, 2) / 2;
+    const opacidade = opacidadeInicial + (opacidadeFinal - opacidadeInicial) * suave;
+    sky.setAttribute('material', 'opacity', opacidade);
+    if (progresso < 1) requestAnimationFrame(quadro);
+    else if (aoTerminar) aoTerminar();
   }
-});
+  requestAnimationFrame(quadro);
+}
+
+function mostrarStatus(texto) {
+  const status = document.getElementById('status');
+  status.style.display = 'block';
+  status.innerHTML = texto;
+  clearTimeout(window._statusTimer);
+  window._statusTimer = setTimeout(() => { status.style.display = 'none'; }, 1400);
+}
+
+function toggleFundo(numero) {
+  if (transicaoEmCurso) return;
+  if (fundoAtivo === numero) { voltarMR(); return; }
+  ativarFundo(numero);
+}
 
 function ativarFundo(numero) {
   const sky = document.getElementById('fundo360');
   const asset = document.getElementById('fundo' + numero);
-  const status = document.getElementById('status');
+  if (!asset || transicaoEmCurso) return;
+  transicaoEmCurso = true;
 
-  if (!asset) {
-    status.style.display = 'block';
-    status.innerHTML = 'Fundo ' + numero + ' ainda não foi adicionado.';
-    return;
+  const trocar = () => {
+    sky.setAttribute('src', '#fundo' + numero);
+    sky.setAttribute('visible', true);
+    sky.setAttribute('material', 'opacity', 0);
+    // pequena espera para a textura entrar antes do fade
+    setTimeout(() => {
+      fadeSky(0, 1, 1600, () => {
+        fundoAtivo = numero;
+        transicaoEmCurso = false;
+        mostrarStatus('Universo do painel ' + numero + ' ativado');
+      });
+    }, 120);
+  };
+
+  if (fundoAtivo !== null && sky.getAttribute('visible')) {
+    const op = parseFloat(sky.getAttribute('material').opacity ?? 1);
+    fadeSky(op, 0, 700, trocar);
+  } else {
+    trocar();
   }
-
-  sky.setAttribute('src', '#fundo' + numero);
-  sky.setAttribute('visible', true);
-  status.style.display = 'block';
-  status.innerHTML = 'Universo do painel ' + numero + ' ativado';
-  setTimeout(() => { status.style.display = 'none'; }, 1500);
 }
 
 function voltarMR() {
   const sky = document.getElementById('fundo360');
-  sky.setAttribute('visible', false);
-  sky.removeAttribute('src');
+  if (transicaoEmCurso) return;
+  if (!sky.getAttribute('visible')) {
+    fundoAtivo = null;
+    mostrarStatus('Realidade mista');
+    return;
+  }
+
+  transicaoEmCurso = true;
+  const material = sky.getAttribute('material') || {};
+  const op = Number.isFinite(parseFloat(material.opacity)) ? parseFloat(material.opacity) : 1;
+  fadeSky(op, 0, 1400, () => {
+    sky.setAttribute('visible', false);
+    sky.removeAttribute('src');
+    fundoAtivo = null;
+    transicaoEmCurso = false;
+    mostrarStatus('Realidade mista restaurada');
+  });
 }
 </script>
 
