@@ -3,25 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Teste MR — Menu de Cores</title>
-<script src="https://aframe.io/releases/1.7.1/aframe.min.js">
-// As imagens m2..m6 também são alvos do olhar.
-// Ao mirar, elas dão um pequeno zoom; ao completar 2s, acionam a cor correspondente.
-const thumbColors = ['#FF7A00','#E52323','#22B14C','#1677FF','#7A35C8'];
-document.querySelectorAll('.thumb').forEach((thumb, i) => {
-  thumb.addEventListener('click', () => {
-    const alvo = [...document.querySelectorAll('.cor-btn')]
-      .find(b => b.dataset.cor === thumbColors[i]);
-    if (alvo) alvo.click();
-  });
-});
-
-</script>
+<title>Geek da Quebrada — Menu 360</title>
+<script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
+#loading360{
+  position:fixed; left:50%; bottom:9%; transform:translateX(-50%);
+  width:min(420px,72vw); z-index:20; display:none; pointer-events:none;
+  font:600 13px Arial,sans-serif; color:#fff; text-align:center;
+  text-shadow:0 1px 4px #000;
+}
+#loadingTrack{
+  margin-top:7px; height:7px; overflow:hidden; border-radius:8px;
+  border:1px solid rgba(255,255,255,.65); background:rgba(0,0,0,.45);
+}
+#loadingBar{
+  width:0%; height:100%; background:#fff; transition:width .12s linear;
+  box-shadow:0 0 12px rgba(255,255,255,.95);
+}
 </style>
 </head>
 <body>
+
+<div id="loading360">
+  <div id="loadingText">CARREGANDO CENÁRIO 0%</div>
+  <div id="loadingTrack"><div id="loadingBar"></div></div>
+</div>
 
 <a-scene
   webxr="requiredFeatures: local-floor; optionalFeatures: bounded-floor; referenceSpaceType: local-floor;"
@@ -29,104 +36,71 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
   renderer="antialias:true; alpha:true; colorManagement:true;"
   background="transparent:true">
 
-  <!-- Esfera que simula o futuro fundo 360 -->
   <a-assets>
-  <img id="menuImg" src="./menu.png" crossorigin="anonymous">
-  <img id="m2" src="./m2.png" crossorigin="anonymous">
-  <img id="m3" src="./m3.png" crossorigin="anonymous">
-  <img id="m4" src="./m4.png" crossorigin="anonymous">
-  <img id="m5" src="./m5.png" crossorigin="anonymous">
-  <img id="m6" src="./m6.png" crossorigin="anonymous">
-</a-assets>
+    <img id="menuImg" src="./menu.png" crossorigin="anonymous">
+    <img id="m2" src="./m2.png" crossorigin="anonymous">
+    <img id="m3" src="./m3.png" crossorigin="anonymous">
+    <img id="m4" src="./m4.png" crossorigin="anonymous">
+    <img id="m5" src="./m5.png" crossorigin="anonymous">
+    <img id="m6" src="./m6.png" crossorigin="anonymous">
+  </a-assets>
 
-<a-sky id="fundo" color="#000000" visible="false"></a-sky>
+  <!-- O fundo 360 é carregado somente quando o visitante escolhe uma opção -->
+  <a-sky id="fundo" visible="false" material="shader:flat; opacity:1"></a-sky>
 
-
-  <!-- MENU FIXO NO AMBIENTE: não acompanha a cabeça -->
-  <!-- Aproximadamente 50% menor que a versão anterior -->
+  <!-- MENU FIXO NO AMBIENTE -->
   <a-entity id="menuFixo" position="0 1.55 -2.00" scale="0.5 0.5 0.5">
 
-    <!-- arte de fundo -->
-    <a-plane
-      src="#menuImg"
-      width="1.60"
-      height="0.90"
-      position="0 0 -0.02"
-      material="shader: flat; transparent: true">
-    </a-plane>
+    <a-plane src="#menuImg" width="1.60" height="0.90" position="0 0 -0.03"
+      material="shader:flat; transparent:true"></a-plane>
 
+    <!-- Neon atrás de cada imagem -->
+    <a-plane id="glow2" class="glow" width=".425" height=".375" position="0 .20 -0.005"
+      material="shader:flat; color:#FF7A00; transparent:true; opacity:0"></a-plane>
+    <a-plane id="glow3" class="glow" width=".425" height=".375" position=".42 .20 -0.005"
+      material="shader:flat; color:#E52323; transparent:true; opacity:0"></a-plane>
+    <a-plane id="glow4" class="glow" width=".425" height=".375" position="-.42 -.20 -0.005"
+      material="shader:flat; color:#22B14C; transparent:true; opacity:0"></a-plane>
+    <a-plane id="glow5" class="glow" width=".425" height=".375" position="0 -.20 -0.005"
+      material="shader:flat; color:#1677FF; transparent:true; opacity:0"></a-plane>
+    <a-plane id="glow6" class="glow" width=".425" height=".375" position=".42 -.20 -0.005"
+      material="shader:flat; color:#7A35C8; transparent:true; opacity:0"></a-plane>
 
-    <!-- IMAGENS DOS BOTÕES: m1 fica vazio nesta etapa -->
-    <a-plane class="thumb" src="#m2" width=".39" height=".34"
-      position="0 .20 0.006"
-      material="shader:flat; transparent:true"
-      animation__hover="property:scale; startEvents:mouseenter; to:1.08 1.08 1.08; dur:160; easing:easeOutQuad"
-      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:160; easing:easeOutQuad">
-    </a-plane>
+    <!-- m1 continua vazio -->
+    <a-plane class="hit" width=".39" height=".34" position="-.42 .20 .012"
+      material="transparent:true; opacity:0.001" data-id="1"></a-plane>
 
-    <a-plane class="thumb" src="#m3" width=".39" height=".34"
-      position=".42 .20 0.006"
-      material="shader:flat; transparent:true"
-      animation__hover="property:scale; startEvents:mouseenter; to:1.08 1.08 1.08; dur:160; easing:easeOutQuad"
-      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:160; easing:easeOutQuad">
-    </a-plane>
+    <!-- Imagens m2...m6 -->
+    <a-plane class="thumb hit" src="#m2" width=".39" height=".34" position="0 .20 .012"
+      material="shader:flat; transparent:true" data-id="2"
+      animation__hover="property:scale; startEvents:mouseenter; to:1.07 1.07 1.07; dur:150"
+      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:150"></a-plane>
 
-    <a-plane class="thumb" src="#m4" width=".39" height=".34"
-      position="-.42 -.20 0.006"
-      material="shader:flat; transparent:true"
-      animation__hover="property:scale; startEvents:mouseenter; to:1.08 1.08 1.08; dur:160; easing:easeOutQuad"
-      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:160; easing:easeOutQuad">
-    </a-plane>
+    <a-plane class="thumb hit" src="#m3" width=".39" height=".34" position=".42 .20 .012"
+      material="shader:flat; transparent:true" data-id="3"
+      animation__hover="property:scale; startEvents:mouseenter; to:1.07 1.07 1.07; dur:150"
+      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:150"></a-plane>
 
-    <a-plane class="thumb" src="#m5" width=".39" height=".34"
-      position="0 -.20 0.006"
-      material="shader:flat; transparent:true"
-      animation__hover="property:scale; startEvents:mouseenter; to:1.08 1.08 1.08; dur:160; easing:easeOutQuad"
-      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:160; easing:easeOutQuad">
-    </a-plane>
+    <a-plane class="thumb hit" src="#m4" width=".39" height=".34" position="-.42 -.20 .012"
+      material="shader:flat; transparent:true" data-id="4"
+      animation__hover="property:scale; startEvents:mouseenter; to:1.07 1.07 1.07; dur:150"
+      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:150"></a-plane>
 
-    <a-plane class="thumb" src="#m6" width=".39" height=".34"
-      position=".42 -.20 0.006"
-      material="shader:flat; transparent:true"
-      animation__hover="property:scale; startEvents:mouseenter; to:1.08 1.08 1.08; dur:160; easing:easeOutQuad"
-      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:160; easing:easeOutQuad">
-    </a-plane>
+    <a-plane class="thumb hit" src="#m5" width=".39" height=".34" position="0 -.20 .012"
+      material="shader:flat; transparent:true" data-id="5"
+      animation__hover="property:scale; startEvents:mouseenter; to:1.07 1.07 1.07; dur:150"
+      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:150"></a-plane>
 
-    <!-- ÁREAS INTERATIVAS SOBRE OS 6 ESPAÇOS DO menu.png -->
-    <!-- Linha superior -->
-    <a-plane class="cor-btn" width=".39" height=".34"
-      position="-.42 .20 0" material="color:#FFD600; transparent:true; opacity:0.001"
-      data-cor="#FFD600"></a-plane>
-
-    <a-plane class="cor-btn" width=".39" height=".34"
-      position="0 .20 0" material="color:#FF7A00; transparent:true; opacity:0.001"
-      data-cor="#FF7A00"></a-plane>
-
-    <a-plane class="cor-btn" width=".39" height=".34"
-      position=".42 .20 0" material="color:#E52323; transparent:true; opacity:0.001"
-      data-cor="#E52323"></a-plane>
-
-    <!-- Linha inferior -->
-    <a-plane class="cor-btn" width=".39" height=".34"
-      position="-.42 -.20 0" material="color:#22B14C; transparent:true; opacity:0.001"
-      data-cor="#22B14C"></a-plane>
-
-    <a-plane class="cor-btn" width=".39" height=".34"
-      position="0 -.20 0" material="color:#1677FF; transparent:true; opacity:0.001"
-      data-cor="#1677FF"></a-plane>
-
-    <a-plane class="cor-btn" width=".39" height=".34"
-      position=".42 -.20 0" material="color:#7A35C8; transparent:true; opacity:0.001"
-      data-cor="#7A35C8"></a-plane>
-
+    <a-plane class="thumb hit" src="#m6" width=".39" height=".34" position=".42 -.20 .012"
+      material="shader:flat; transparent:true" data-id="6"
+      animation__hover="property:scale; startEvents:mouseenter; to:1.07 1.07 1.07; dur:150"
+      animation__leave="property:scale; startEvents:mouseleave; to:1 1 1; dur:150"></a-plane>
   </a-entity>
 
   <a-camera position="0 1.6 0" wasd-controls-enabled="false">
-
-    <!-- cursor por olhar: 2 segundos sobre o botão = clique; não usa controle -->
     <a-entity
       cursor="rayOrigin:entity; fuse:true; fuseTimeout:2000"
-      raycaster="objects:.cor-btn, .thumb; far:8"
+      raycaster="objects:.hit; far:8"
       position="0 0 -0.8"
       geometry="primitive:ring; radiusInner:.004; radiusOuter:.007"
       material="color:white; shader:flat"
@@ -134,45 +108,115 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
       animation__reset="property:scale; startEvents:mouseleave; to:1 1 1; dur:120"
       animation__click="property:scale; startEvents:click; to:1 1 1; dur:120">
     </a-entity>
-
- </a-camera>
+  </a-camera>
 </a-scene>
 
 <script>
 const fundo = document.getElementById('fundo');
-const botoes = document.querySelectorAll('.cor-btn');
-let primeiraTroca = true;
+const loading = document.getElementById('loading360');
+const loadingBar = document.getElementById('loadingBar');
+const loadingText = document.getElementById('loadingText');
 
-botoes.forEach(botao => {
+let atual = null;
+let pedido = 0;
 
-  botao.addEventListener('click', () => {
-    const cor = botao.dataset.cor;
+function selecionarNeon(id){
+  document.querySelectorAll('.glow').forEach(g => {
+    g.removeAttribute('animation__pulse');
+    g.setAttribute('material','opacity',0);
+    g.setAttribute('scale','1 1 1');
+  });
 
-    if (primeiraTroca) {
-      fundo.setAttribute('color', cor);
-      fundo.setAttribute('visible', true);
-      primeiraTroca = false;
+  const glow = document.getElementById('glow' + id);
+  if (!glow) return;
+
+  glow.setAttribute('material','opacity',0.95);
+  glow.setAttribute('animation__pulse',
+    'property:scale; from:1 1 1; to:1.045 1.045 1.045; dir:alternate; loop:true; dur:650; easing:easeInOutSine');
+}
+
+function progresso(p){
+  const v = Math.max(0, Math.min(100, Math.round(p)));
+  loadingBar.style.width = v + '%';
+  loadingText.textContent = 'CARREGANDO CENÁRIO ' + v + '%';
+}
+
+function carregar360(id){
+  if (id === 1) return; // m1/fundo1 ainda não existe
+  if (id === atual) return;
+
+  const meuPedido = ++pedido;
+  selecionarNeon(id);
+  loading.style.display = 'block';
+  progresso(0);
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', './fundo' + id + '.png', true);
+  xhr.responseType = 'blob';
+
+  xhr.onprogress = e => {
+    if (meuPedido !== pedido) return;
+    if (e.lengthComputable) progresso((e.loaded / e.total) * 100);
+    else {
+      const atual = parseInt(loadingBar.style.width) || 0;
+      progresso(Math.min(90, atual + 4));
+    }
+  };
+
+  xhr.onload = () => {
+    if (meuPedido !== pedido) return;
+    if (xhr.status < 200 || xhr.status >= 300) {
+      loadingText.textContent = 'ERRO AO CARREGAR';
+      setTimeout(() => loading.style.display='none', 1200);
       return;
     }
 
-    // pequena transição: escurece e entra a nova cor
-    fundo.setAttribute(
-      'animation__out',
-      'property:material.opacity; from:1; to:0; dur:250'
-    );
+    progresso(100);
+    const url = URL.createObjectURL(xhr.response);
+    const img = new Image();
 
-    setTimeout(() => {
-      fundo.setAttribute('color', cor);
-      fundo.setAttribute('material', 'opacity:0');
+    img.onload = () => {
+      if (meuPedido !== pedido) { URL.revokeObjectURL(url); return; }
 
-      fundo.setAttribute(
-        'animation__in',
-        'property:material.opacity; from:0; to:1; dur:500'
-      );
-    }, 260);
-  });
+      fundo.setAttribute('animation__out',
+        'property:material.opacity; from:1; to:0; dur:220');
+
+      setTimeout(() => {
+        fundo.setAttribute('src', url);
+        fundo.setAttribute('visible', true);
+        fundo.setAttribute('material','shader:flat; opacity:0');
+        fundo.setAttribute('animation__in',
+          'property:material.opacity; from:0; to:1; dur:500');
+        atual = id;
+
+        setTimeout(() => {
+          loading.style.display = 'none';
+          loadingBar.style.width = '0%';
+        }, 420);
+      }, 230);
+    };
+
+    img.onerror = () => {
+      loadingText.textContent = 'ERRO NA IMAGEM';
+      setTimeout(() => loading.style.display='none', 1200);
+      URL.revokeObjectURL(url);
+    };
+
+    img.src = url;
+  };
+
+  xhr.onerror = () => {
+    if (meuPedido !== pedido) return;
+    loadingText.textContent = 'ERRO AO CARREGAR';
+    setTimeout(() => loading.style.display='none', 1200);
+  };
+
+  xhr.send();
+}
+
+document.querySelectorAll('.hit').forEach(botao => {
+  botao.addEventListener('click', () => carregar360(Number(botao.dataset.id)));
 });
 </script>
-
 </body>
 </html>
