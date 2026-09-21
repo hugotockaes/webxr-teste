@@ -7,27 +7,10 @@
 <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
-#loading360{
-  position:fixed; left:50%; bottom:9%; transform:translateX(-50%);
-  width:min(420px,72vw); z-index:20; display:none; pointer-events:none;
-  font:600 13px Arial,sans-serif; color:#fff; text-align:center;
-  text-shadow:0 1px 4px #000;
-}
-#loadingTrack{
-  margin-top:7px; height:7px; overflow:hidden; border-radius:8px;
-  border:1px solid rgba(255,255,255,.65); background:rgba(0,0,0,.45);
-}
-#loadingBar{
-  width:0%; height:100%; background:#fff; transition:width .12s linear;
-  box-shadow:0 0 12px rgba(255,255,255,.95);
-}
+
 </style>
 </head>
 <body>
-
-<div id="loading360">
-  <div id="loadingText">CARREGANDO CENÁRIO 0%</div>
-  <div id="loadingTrack"><div id="loadingBar"></div></div>
 </div>
 
 <a-scene
@@ -43,6 +26,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
     <img id="m4" src="./m4.png" crossorigin="anonymous">
     <img id="m5" src="./m5.png" crossorigin="anonymous">
     <img id="m6" src="./m6.png" crossorigin="anonymous">
+    <img id="fundo2" src="./fundo2.png" crossorigin="anonymous">
+    <img id="fundo3" src="./fundo3.png" crossorigin="anonymous">
+    <img id="fundo4" src="./fundo4.png" crossorigin="anonymous">
+    <img id="fundo5" src="./fundo5.png" crossorigin="anonymous">
+    <img id="fundo6" src="./fundo6.png" crossorigin="anonymous">
   </a-assets>
 
   <!-- O fundo 360 é carregado somente quando o visitante escolhe uma opção -->
@@ -113,106 +101,61 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
 
 <script>
 const fundo = document.getElementById('fundo');
-const loading = document.getElementById('loading360');
-const loadingBar = document.getElementById('loadingBar');
-const loadingText = document.getElementById('loadingText');
-
 let atual = null;
-let pedido = 0;
 
-function selecionarNeon(id){
+function selecionarNeon(id) {
   document.querySelectorAll('.glow').forEach(g => {
     g.removeAttribute('animation__pulse');
-    g.setAttribute('material','opacity',0);
-    g.setAttribute('scale','1 1 1');
+    g.setAttribute('material', 'opacity', 0);
+    g.setAttribute('scale', '1 1 1');
   });
 
   const glow = document.getElementById('glow' + id);
   if (!glow) return;
 
-  glow.setAttribute('material','opacity',0.95);
-  glow.setAttribute('animation__pulse',
-    'property:scale; from:1 1 1; to:1.045 1.045 1.045; dir:alternate; loop:true; dur:650; easing:easeInOutSine');
+  glow.setAttribute('material', 'opacity', 0.95);
+  glow.setAttribute(
+    'animation__pulse',
+    'property:scale; from:1 1 1; to:1.045 1.045 1.045; dir:alternate; loop:true; dur:650; easing:easeInOutSine'
+  );
 }
 
-function progresso(p){
-  const v = Math.max(0, Math.min(100, Math.round(p)));
-  loadingBar.style.width = v + '%';
-  loadingText.textContent = 'CARREGANDO CENÁRIO ' + v + '%';
-}
+function carregar360(id) {
+  if (id === 1 || id === atual) return;
 
-function carregar360(id){
-  if (id === 1) return; // m1/fundo1 ainda não existe
-  if (id === atual) return;
-
-  const meuPedido = ++pedido;
   selecionarNeon(id);
-  loading.style.display = 'block';
-  progresso(0);
 
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', './fundo' + id + '.png', true);
-  xhr.responseType = 'blob';
+  // Usa diretamente os assets do A-Frame. Sem XHR, Blob ou barra de carregamento.
+  fundo.removeAttribute('animation__out');
+  fundo.removeAttribute('animation__in');
 
-  xhr.onprogress = e => {
-    if (meuPedido !== pedido) return;
-    if (e.lengthComputable) progresso((e.loaded / e.total) * 100);
-    else {
-      const atual = parseInt(loadingBar.style.width) || 0;
-      progresso(Math.min(90, atual + 4));
-    }
-  };
+  if (!fundo.getAttribute('visible')) {
+    fundo.setAttribute('material', 'src', '#fundo' + id);
+    fundo.setAttribute('material', 'opacity', 0);
+    fundo.setAttribute('visible', true);
+    fundo.setAttribute(
+      'animation__in',
+      'property:material.opacity; from:0; to:1; dur:450; easing:easeInOutQuad'
+    );
+    atual = id;
+    return;
+  }
 
-  xhr.onload = () => {
-    if (meuPedido !== pedido) return;
-    if (xhr.status < 200 || xhr.status >= 300) {
-      loadingText.textContent = 'ERRO AO CARREGAR';
-      setTimeout(() => loading.style.display='none', 1200);
-      return;
-    }
+  fundo.setAttribute(
+    'animation__out',
+    'property:material.opacity; from:1; to:0; dur:180; easing:easeInOutQuad'
+  );
 
-    progresso(100);
-    const url = URL.createObjectURL(xhr.response);
-    const img = new Image();
-
-    img.onload = () => {
-      if (meuPedido !== pedido) { URL.revokeObjectURL(url); return; }
-
-      fundo.setAttribute('animation__out',
-        'property:material.opacity; from:1; to:0; dur:220');
-
-      setTimeout(() => {
-        fundo.setAttribute('visible', true);
-        fundo.setAttribute('material', 'shader', 'flat');
-        fundo.setAttribute('material', 'opacity', 0);
-        fundo.setAttribute('material', 'src', url);
-        fundo.setAttribute('animation__in',
-          'property:material.opacity; from:0; to:1; dur:500');
-        atual = id;
-
-        setTimeout(() => {
-          loading.style.display = 'none';
-          loadingBar.style.width = '0%';
-        }, 420);
-      }, 230);
-    };
-
-    img.onerror = () => {
-      loadingText.textContent = 'ERRO NA IMAGEM';
-      setTimeout(() => loading.style.display='none', 1200);
-      URL.revokeObjectURL(url);
-    };
-
-    img.src = url;
-  };
-
-  xhr.onerror = () => {
-    if (meuPedido !== pedido) return;
-    loadingText.textContent = 'ERRO AO CARREGAR';
-    setTimeout(() => loading.style.display='none', 1200);
-  };
-
-  xhr.send();
+  setTimeout(() => {
+    fundo.removeAttribute('animation__out');
+    fundo.setAttribute('material', 'src', '#fundo' + id);
+    fundo.setAttribute('material', 'opacity', 0);
+    fundo.setAttribute(
+      'animation__in',
+      'property:material.opacity; from:0; to:1; dur:450; easing:easeInOutQuad'
+    );
+    atual = id;
+  }, 190);
 }
 
 document.querySelectorAll('.hit').forEach(botao => {
