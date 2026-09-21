@@ -9,7 +9,7 @@
     content="width=device-width, initial-scale=1.0, user-scalable=no"
   >
 
-  <title>Galeria MR Compacta</title>
+  <title>História da TV — Exposição MR</title>
 
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
 
@@ -37,11 +37,147 @@
       text-align: center;
       pointer-events: none;
     }
+
+    #entrada {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      overflow-y: auto;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(20,65,110,.35), transparent 42%),
+        linear-gradient(180deg, #05080d 0%, #090d12 100%);
+      color: #fff;
+    }
+
+    .hero {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      box-sizing: border-box;
+      padding-bottom: 48px;
+    }
+
+    .hero img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 62vh;
+      object-fit: cover;
+      object-position: center;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .hero-conteudo {
+      width: min(900px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 10px;
+      text-align: center;
+    }
+
+    .hero-conteudo h1 {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 5vw, 58px);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .subtitulo {
+      margin: 0 auto 18px;
+      max-width: 720px;
+      color: #d8dde5;
+      font-size: clamp(16px, 2.2vw, 21px);
+      line-height: 1.5;
+    }
+
+    .autor {
+      margin: 18px 0 26px;
+      color: #aeb9c8;
+      font-size: 14px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    #entrarMR {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,.30);
+      border-radius: 999px;
+      padding: 16px 30px;
+      background: linear-gradient(90deg, #d59a22, #ffffff 48%, #1688ff);
+      color: #05080d;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 12px 38px rgba(0,95,255,.24);
+    }
+
+    #entrarMR:active {
+      transform: scale(.98);
+    }
+
+    .instrucao {
+      margin: 15px auto 0;
+      max-width: 650px;
+      color: #8994a3;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #mensagemXR {
+      min-height: 22px;
+      margin-top: 12px;
+      color: #d9e8ff;
+      font-size: 13px;
+    }
+
+    body.xr-ativo #entrada {
+      display: none;
+    }
+
+    body:not(.xr-ativo) #status {
+      display: none;
+    }
   </style>
 </head>
 
 
 <body>
+
+
+<div id="entrada">
+  <main class="hero">
+    <img src="./topo.png" alt="História da TV — do sinal analógico ao futuro">
+
+    <section class="hero-conteudo">
+      <h1>História da TV</h1>
+
+      <p class="subtitulo">
+        Uma viagem pela evolução da televisão — dos primeiros sinais analógicos,
+        passando pela TV em cores e pela era digital, até as experiências
+        conectadas e imersivas.
+      </p>
+
+      <p class="autor">
+        Uma exposição de Hugo Duarte Tockaes
+      </p>
+
+      <button id="entrarMR" type="button">
+        Entrar na exposição em realidade mista
+      </button>
+
+      <p class="instrucao">
+        No Meta Quest, toque no botão acima para iniciar a experiência.
+        Os seis expositores e suas doze pranchas serão ativados no ambiente real.
+      </p>
+
+      <div id="mensagemXR"></div>
+    </section>
+  </main>
+</div>
 
 <div id="status">
   Verificando imagens...
@@ -123,7 +259,7 @@
        ESQUERDA
        ================================================== -->
 
-  <a-entity position="-1.00 0 -1.0">
+  <a-entity class="painel-exposicao" visible="false" position="-1.00 0 -1.0">
 
     <a-box
       width="1.26"
@@ -160,7 +296,7 @@
        ESQUERDA
        ================================================== -->
 
-  <a-entity position="-1.00 0 -2.0">
+  <a-entity class="painel-exposicao" visible="false" position="-1.00 0 -2.0">
 
     <a-box
       width="1.26"
@@ -197,7 +333,7 @@
        ESQUERDA
        ================================================== -->
 
-  <a-entity position="-1.00 0 -3.0">
+  <a-entity class="painel-exposicao" visible="false" position="-1.00 0 -3.0">
 
     <a-box
       width="1.26"
@@ -234,7 +370,7 @@
        DIREITA
        ================================================== -->
 
-  <a-entity position="1.00 0 -1.0">
+  <a-entity class="painel-exposicao" visible="false" position="1.00 0 -1.0">
 
     <a-box
       width="1.26"
@@ -271,7 +407,7 @@
        DIREITA
        ================================================== -->
 
-  <a-entity position="1.00 0 -2.0">
+  <a-entity class="painel-exposicao" visible="false" position="1.00 0 -2.0">
 
     <a-box
       width="1.26"
@@ -308,7 +444,7 @@
        DIREITA
        ================================================== -->
 
-  <a-entity position="1.00 0 -3.0">
+  <a-entity class="painel-exposicao" visible="false" position="1.00 0 -3.0">
 
     <a-box
       width="1.26"
@@ -352,6 +488,73 @@
 
 </a-scene>
 
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const scene = document.querySelector("a-scene");
+  const botao = document.getElementById("entrarMR");
+  const mensagem = document.getElementById("mensagemXR");
+  const paineis = document.querySelectorAll(".painel-exposicao");
+
+  function mostrarPaineis() {
+    paineis.forEach(function (painel) {
+      painel.setAttribute("visible", true);
+    });
+  }
+
+  function ocultarPaineis() {
+    paineis.forEach(function (painel) {
+      painel.setAttribute("visible", false);
+    });
+  }
+
+  botao.addEventListener("click", async function () {
+    botao.disabled = true;
+    botao.textContent = "Iniciando realidade mista...";
+    mensagem.textContent = "";
+
+    mostrarPaineis();
+
+    try {
+      if (!scene.hasLoaded) {
+        await new Promise(function (resolve) {
+          scene.addEventListener("loaded", resolve, { once: true });
+        });
+      }
+
+      if (typeof scene.enterAR === "function") {
+        await scene.enterAR();
+      } else {
+        throw new Error("Este navegador não disponibilizou o modo AR.");
+      }
+    } catch (erro) {
+      ocultarPaineis();
+      botao.disabled = false;
+      botao.textContent = "Entrar na exposição em realidade mista";
+      mensagem.textContent =
+        "Não foi possível iniciar a realidade mista. Abra esta página no navegador do Meta Quest e tente novamente.";
+      console.error(erro);
+    }
+  });
+
+  scene.addEventListener("enter-vr", function () {
+    if (scene.is("ar-mode")) {
+      mostrarPaineis();
+      document.body.classList.add("xr-ativo");
+      document.getElementById("status").style.display = "block";
+    }
+  });
+
+  scene.addEventListener("exit-vr", function () {
+    ocultarPaineis();
+    document.body.classList.remove("xr-ativo");
+    botao.disabled = false;
+    botao.textContent = "Entrar na exposição em realidade mista";
+    mensagem.textContent = "";
+  });
+});
+</script>
 
 <!-- ==================================================
      TESTE AUTOMÁTICO DAS IMAGENS
