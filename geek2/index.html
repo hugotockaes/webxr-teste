@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Teste MR — Menu de Cores</title>
+<script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
+</style>
+</head>
+<body>
+
+<a-scene
+  webxr="requiredFeatures: local-floor; optionalFeatures: bounded-floor; referenceSpaceType: local-floor;"
+  xr-mode-ui="enabled:true; XRMode:ar;"
+  renderer="antialias:true; alpha:true; colorManagement:true;"
+  background="transparent:true">
+
+  <!-- Esfera que simula o futuro fundo 360 -->
+  <a-sky id="fundo" color="#000000" visible="false"></a-sky>
+
+  <a-camera position="0 1.6 0" wasd-controls-enabled="false">
+
+    <!-- cursor -->
+    <a-entity
+      cursor="rayOrigin:entity"
+      raycaster="objects:.cor-btn; far:8"
+      position="0 0 -0.8"
+      geometry="primitive:ring; radiusInner:.004; radiusOuter:.007"
+      material="color:white; shader:flat">
+    </a-entity>
+
+    <!-- MENU 3 + 3 -->
+    <a-entity id="menu" position="0 -0.08 -1.35">
+
+      <a-plane
+        width="1.48" height="1.02"
+        position="0 0 -0.02"
+        material="color:#111; transparent:true; opacity:.65; shader:flat">
+      </a-plane>
+
+      <!-- Linha superior -->
+      <a-plane class="cor-btn" width=".40" height=".40"
+        position="-.47 .24 0" color="#FFD600" data-cor="#FFD600"></a-plane>
+
+      <a-plane class="cor-btn" width=".40" height=".40"
+        position="0 .24 0" color="#FF7A00" data-cor="#FF7A00"></a-plane>
+
+      <a-plane class="cor-btn" width=".40" height=".40"
+        position=".47 .24 0" color="#E52323" data-cor="#E52323"></a-plane>
+
+      <!-- Linha inferior -->
+      <a-plane class="cor-btn" width=".40" height=".40"
+        position="-.47 -.24 0" color="#22B14C" data-cor="#22B14C"></a-plane>
+
+      <a-plane class="cor-btn" width=".40" height=".40"
+        position="0 -.24 0" color="#1677FF" data-cor="#1677FF"></a-plane>
+
+      <a-plane class="cor-btn" width=".40" height=".40"
+        position=".47 -.24 0" color="#7A35C8" data-cor="#7A35C8"></a-plane>
+
+    </a-entity>
+  </a-camera>
+</a-scene>
+
+<script>
+const fundo = document.getElementById('fundo');
+const botoes = document.querySelectorAll('.cor-btn');
+let primeiraTroca = true;
+
+botoes.forEach(botao => {
+
+  botao.addEventListener('mouseenter', () => {
+    botao.setAttribute(
+      'animation__hover',
+      'property:scale; to:1.06 1.06 1.06; dur:120'
+    );
+  });
+
+  botao.addEventListener('mouseleave', () => {
+    botao.setAttribute(
+      'animation__hover',
+      'property:scale; to:1 1 1; dur:120'
+    );
+  });
+
+  botao.addEventListener('click', () => {
+    const cor = botao.dataset.cor;
+
+    if (primeiraTroca) {
+      fundo.setAttribute('color', cor);
+      fundo.setAttribute('visible', true);
+      primeiraTroca = false;
+      return;
+    }
+
+    // pequena transição: escurece e entra a nova cor
+    fundo.setAttribute(
+      'animation__out',
+      'property:material.opacity; from:1; to:0; dur:250'
+    );
+
+    setTimeout(() => {
+      fundo.setAttribute('color', cor);
+      fundo.setAttribute('material', 'opacity:0');
+
+      fundo.setAttribute(
+        'animation__in',
+        'property:material.opacity; from:0; to:1; dur:500'
+      );
+    }, 260);
+  });
+});
+</script>
+
+</body>
+</html>
