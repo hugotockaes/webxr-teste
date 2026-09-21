@@ -182,9 +182,10 @@ function carregar360(id){
         'property:material.opacity; from:1; to:0; dur:220');
 
       setTimeout(() => {
-        fundo.setAttribute('src', url);
         fundo.setAttribute('visible', true);
-        fundo.setAttribute('material','shader:flat; opacity:0');
+        fundo.setAttribute('material', 'shader', 'flat');
+        fundo.setAttribute('material', 'opacity', 0);
+        fundo.setAttribute('material', 'src', url);
         fundo.setAttribute('animation__in',
           'property:material.opacity; from:0; to:1; dur:500');
         atual = id;
