@@ -18,7 +18,54 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
   background="transparent:true">
 
   <!-- Esfera que simula o futuro fundo 360 -->
-  <a-sky id="fundo" color="#000000" visible="false"></a-sky>
+  <a-assets>
+  <img id="menuImg" src="./menu.png" crossorigin="anonymous">
+</a-assets>
+
+<a-sky id="fundo" color="#000000" visible="false"></a-sky>
+
+
+  <!-- MENU FIXO NO AMBIENTE: não acompanha a cabeça -->
+  <!-- Aproximadamente 50% menor que a versão anterior -->
+  <a-entity id="menuFixo" position="0 1.55 -2.00" scale="0.5 0.5 0.5">
+
+    <!-- arte de fundo -->
+    <a-plane
+      src="#menuImg"
+      width="1.60"
+      height="0.90"
+      position="0 0 -0.02"
+      material="shader: flat; transparent: true">
+    </a-plane>
+
+    <!-- ÁREAS INTERATIVAS SOBRE OS 6 ESPAÇOS DO menu.png -->
+    <!-- Linha superior -->
+    <a-plane class="cor-btn" width=".39" height=".34"
+      position="-.42 .20 0" material="color:#FFD600; transparent:true; opacity:0.001"
+      data-cor="#FFD600"></a-plane>
+
+    <a-plane class="cor-btn" width=".39" height=".34"
+      position="0 .20 0" material="color:#FF7A00; transparent:true; opacity:0.001"
+      data-cor="#FF7A00"></a-plane>
+
+    <a-plane class="cor-btn" width=".39" height=".34"
+      position=".42 .20 0" material="color:#E52323; transparent:true; opacity:0.001"
+      data-cor="#E52323"></a-plane>
+
+    <!-- Linha inferior -->
+    <a-plane class="cor-btn" width=".39" height=".34"
+      position="-.42 -.20 0" material="color:#22B14C; transparent:true; opacity:0.001"
+      data-cor="#22B14C"></a-plane>
+
+    <a-plane class="cor-btn" width=".39" height=".34"
+      position="0 -.20 0" material="color:#1677FF; transparent:true; opacity:0.001"
+      data-cor="#1677FF"></a-plane>
+
+    <a-plane class="cor-btn" width=".39" height=".34"
+      position=".42 -.20 0" material="color:#7A35C8; transparent:true; opacity:0.001"
+      data-cor="#7A35C8"></a-plane>
+
+  </a-entity>
 
   <a-camera position="0 1.6 0" wasd-controls-enabled="false">
 
@@ -34,37 +81,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
       animation__click="property:scale; startEvents:click; to:1 1 1; dur:120">
     </a-entity>
 
-    <!-- MENU 3 + 3 -->
-    <a-entity id="menu" position="0 -0.08 -1.35">
-
-      <a-plane
-        width="1.48" height="1.02"
-        position="0 0 -0.02"
-        material="color:#111; transparent:true; opacity:.65; shader:flat">
-      </a-plane>
-
-      <!-- Linha superior -->
-      <a-plane class="cor-btn" width=".40" height=".40"
-        position="-.47 .24 0" color="#FFD600" data-cor="#FFD600"></a-plane>
-
-      <a-plane class="cor-btn" width=".40" height=".40"
-        position="0 .24 0" color="#FF7A00" data-cor="#FF7A00"></a-plane>
-
-      <a-plane class="cor-btn" width=".40" height=".40"
-        position=".47 .24 0" color="#E52323" data-cor="#E52323"></a-plane>
-
-      <!-- Linha inferior -->
-      <a-plane class="cor-btn" width=".40" height=".40"
-        position="-.47 -.24 0" color="#22B14C" data-cor="#22B14C"></a-plane>
-
-      <a-plane class="cor-btn" width=".40" height=".40"
-        position="0 -.24 0" color="#1677FF" data-cor="#1677FF"></a-plane>
-
-      <a-plane class="cor-btn" width=".40" height=".40"
-        position=".47 -.24 0" color="#7A35C8" data-cor="#7A35C8"></a-plane>
-
-    </a-entity>
-  </a-camera>
+ </a-camera>
 </a-scene>
 
 <script>
@@ -73,20 +90,6 @@ const botoes = document.querySelectorAll('.cor-btn');
 let primeiraTroca = true;
 
 botoes.forEach(botao => {
-
-  botao.addEventListener('mouseenter', () => {
-    botao.setAttribute(
-      'animation__hover',
-      'property:scale; to:1.06 1.06 1.06; dur:120'
-    );
-  });
-
-  botao.addEventListener('mouseleave', () => {
-    botao.setAttribute(
-      'animation__hover',
-      'property:scale; to:1 1 1; dur:120'
-    );
-  });
 
   botao.addEventListener('click', () => {
     const cor = botao.dataset.cor;
