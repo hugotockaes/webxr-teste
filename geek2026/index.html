@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no"
+  >
+
+  <title>Geek da Quebrada — Galeria MR</title>
+
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      font-family: Arial, sans-serif;
+    }
+
+    #status {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+
+      padding: 12px 18px;
+      border-radius: 12px;
+
+      background: rgba(0,0,0,.80);
+      color: white;
+
+      font-size: 14px;
+      text-align: center;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+
+<body>
+
+<div id="status">
+  Verificando imagens...
+</div>
+
+
+<a-scene
+
+  webxr="
+    requiredFeatures: local-floor;
+    optionalFeatures: bounded-floor, hand-tracking;
+    referenceSpaceType: local-floor;
+    overlayElement: #status;
+  "
+
+  xr-mode-ui="
+    enabled: true;
+    XRMode: ar;
+  "
+
+  renderer="
+    antialias: true;
+    alpha: true;
+    colorManagement: true;
+  "
+
+  background="transparent: true"
+>
+
+
+  <!-- ==================================================
+       IMAGENS
+       ================================================== -->
+
+  <a-assets timeout="10000">
+
+    <img id="p1a" src="./painel1a.png" crossorigin="anonymous">
+    <img id="p1b" src="./painel1b.png" crossorigin="anonymous">
+
+    <img id="p2a" src="./painel2a.png" crossorigin="anonymous">
+    <img id="p2b" src="./painel2b.png" crossorigin="anonymous">
+
+    <img id="p3a" src="./painel3a.png" crossorigin="anonymous">
+    <img id="p3b" src="./painel3b.png" crossorigin="anonymous">
+
+    <img id="p4a" src="./painel4a.png" crossorigin="anonymous">
+    <img id="p4b" src="./painel4b.png" crossorigin="anonymous">
+
+    <img id="p5a" src="./painel5a.png" crossorigin="anonymous">
+    <img id="p5b" src="./painel5b.png" crossorigin="anonymous">
+
+    <img id="p6a" src="./painel6a.png" crossorigin="anonymous">
+    <img id="p6b" src="./painel6b.png" crossorigin="anonymous">
+
+    <!-- FUNDOS 360 EQUIRETANGULARES -->
+    <img id="fundo2" src="./fundo2.png" crossorigin="anonymous">
+    <img id="fundo3" src="./fundo3.png" crossorigin="anonymous">
+    <img id="fundo4" src="./fundo4.png" crossorigin="anonymous">
+    <img id="fundo5" src="./fundo5.png" crossorigin="anonymous">
+    <img id="fundo6" src="./fundo6.png" crossorigin="anonymous">
+
+  </a-assets>
+
+  <!-- Fundo 360: invisível = passthrough / realidade mista -->
+  <a-sky id="fundo360" visible="false" rotation="0 -90 0"></a-sky>
+
+
+  <!-- ==================================================
+       CONFIGURAÇÃO
+
+       PAINÉIS:
+       largura = 1.20 m
+       altura  = 1.80 m
+
+       CORREDOR CENTRAL LIVRE:
+       0.80 m
+
+       Centros das colunas:
+       esquerda = X -1.00
+       direita  = X +1.00
+
+       Distância longitudinal:
+       1.00 m
+       ================================================== -->
+
+
+  <!-- ==================================================
+       PAINEL 1
+       ESQUERDA
+       ================================================== -->
+
+  <a-entity position="-1.00 0 -1.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p1a"
+      class="gaze-panel"
+      gaze-universo="painel: 1"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p1b"
+      class="gaze-panel"
+      gaze-universo="painel: 1"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       PAINEL 2
+       ESQUERDA
+       ================================================== -->
+
+  <a-entity position="-1.00 0 -2.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p2a"
+      class="gaze-panel"
+      gaze-universo="painel: 2"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p2b"
+      class="gaze-panel"
+      gaze-universo="painel: 2"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       PAINEL 3
+       ESQUERDA
+       ================================================== -->
+
+  <a-entity position="-1.00 0 -3.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p3a"
+      class="gaze-panel"
+      gaze-universo="painel: 3"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p3b"
+      class="gaze-panel"
+      gaze-universo="painel: 3"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       PAINEL 4
+       DIREITA
+       ================================================== -->
+
+  <a-entity position="1.00 0 -1.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p4a"
+      class="gaze-panel"
+      gaze-universo="painel: 4"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p4b"
+      class="gaze-panel"
+      gaze-universo="painel: 4"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       PAINEL 5
+       DIREITA
+       ================================================== -->
+
+  <a-entity position="1.00 0 -2.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p5a"
+      class="gaze-panel"
+      gaze-universo="painel: 5"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p5b"
+      class="gaze-panel"
+      gaze-universo="painel: 5"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       PAINEL 6
+       DIREITA
+       ================================================== -->
+
+  <a-entity position="1.00 0 -3.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p6a"
+      class="gaze-panel"
+      gaze-universo="painel: 6"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p6b"
+      class="gaze-panel"
+      gaze-universo="painel: 6"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       CÂMERA
+       ================================================== -->
+
+  <a-camera
+    position="0 1.6 0"
+    wasd-controls-enabled="false">
+
+    <!-- Mira central: 3 s para ativar o universo -->
+    <a-cursor
+      id="mira"
+      fuse="false"
+      raycaster="objects: .gaze-panel; far: 20"
+      geometry="primitive: ring; radiusInner: 0.007; radiusOuter: 0.011"
+      material="color: white; shader: flat; opacity: 0.75">
+    </a-cursor>
+
+  </a-camera>
+
+
+</a-scene>
+
+
+<!-- ==================================================
+     INTERAÇÃO POR OLHAR
+     3 s  = ativa o universo do painel
+     12 s = volta à realidade mista
+     ================================================== -->
+
+<script>
+AFRAME.registerComponent('gaze-universo', {
+  schema: { painel: {type: 'int'} },
+
+  init: function () {
+    this.timer3 = null;
+    this.timer12 = null;
+    this.olhando = false;
+
+    this.el.addEventListener('raycaster-intersected', () => {
+      if (this.olhando) return;
+      this.olhando = true;
+
+      const painel = this.data.painel;
+      const status = document.getElementById('status');
+      status.style.display = 'block';
+      status.innerHTML = painel === 1
+        ? 'Continue olhando… 3 s para realidade mista'
+        : 'Continue olhando… 3 s para entrar no universo do painel ' + painel;
+
+      this.timer3 = setTimeout(() => {
+        if (!this.olhando) return;
+        if (painel === 1) {
+          voltarMR();
+        } else {
+          ativarFundo(painel);
+        }
+      }, 3000);
+
+      this.timer12 = setTimeout(() => {
+        if (!this.olhando) return;
+        voltarMR();
+        status.style.display = 'block';
+        status.innerHTML = 'Realidade mista restaurada';
+        setTimeout(() => { status.style.display = 'none'; }, 1800);
+      }, 12000);
+    });
+
+    this.el.addEventListener('raycaster-intersected-cleared', () => {
+      this.olhando = false;
+      clearTimeout(this.timer3);
+      clearTimeout(this.timer12);
+      const status = document.getElementById('status');
+      if (status.innerHTML.indexOf('carregadas') === -1) {
+        status.style.display = 'none';
+      }
+    });
+  }
+});
+
+function ativarFundo(numero) {
+  const sky = document.getElementById('fundo360');
+  const asset = document.getElementById('fundo' + numero);
+  const status = document.getElementById('status');
+
+  if (!asset) {
+    status.style.display = 'block';
+    status.innerHTML = 'Fundo ' + numero + ' ainda não foi adicionado.';
+    return;
+  }
+
+  sky.setAttribute('src', '#fundo' + numero);
+  sky.setAttribute('visible', true);
+  status.style.display = 'block';
+  status.innerHTML = 'Universo do painel ' + numero + ' ativado';
+  setTimeout(() => { status.style.display = 'none'; }, 1500);
+}
+
+function voltarMR() {
+  const sky = document.getElementById('fundo360');
+  sky.setAttribute('visible', false);
+  sky.removeAttribute('src');
+}
+</script>
+
+
+<!-- ==================================================
+     TESTE AUTOMÁTICO DAS IMAGENS
+     ================================================== -->
+
+<script>
+
+const arquivos = [
+
+  "painel1a.png",
+  "painel1b.png",
+
+  "painel2a.png",
+  "painel2b.png",
+
+  "painel3a.png",
+  "painel3b.png",
+
+  "painel4a.png",
+  "painel4b.png",
+
+  "painel5a.png",
+  "painel5b.png",
+
+  "painel6a.png",
+  "painel6b.png"
+
+];
+
+
+let carregadas = 0;
+let erros = [];
+
+
+arquivos.forEach(function(arquivo) {
+
+  const imagem = new Image();
+
+
+  imagem.onload = function() {
+
+    carregadas++;
+
+    atualizarStatus();
+
+  };
+
+
+  imagem.onerror = function() {
+
+    erros.push(arquivo);
+
+    atualizarStatus();
+
+  };
+
+
+  imagem.src = "./" + arquivo;
+
+});
+
+
+function atualizarStatus() {
+
+  const totalProcessado =
+    carregadas + erros.length;
+
+
+  if(totalProcessado === arquivos.length) {
+
+    const status =
+      document.getElementById("status");
+
+
+    if(erros.length === 0) {
+
+      status.innerHTML =
+        "✓ 12 imagens carregadas — Galeria MR pronta";
+
+
+      setTimeout(function() {
+
+        status.style.display = "none";
+
+      }, 3000);
+
+    }
+
+    else {
+
+      status.innerHTML =
+        "ERRO: arquivos não encontrados:<br>" +
+        erros.join("<br>");
+
+    }
+
+  }
+
+}
+
+</script>
+
+
+</body>
+
+</html>
