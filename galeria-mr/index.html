@@ -99,12 +99,31 @@
   </a-assets>
 
 
+  <!-- ==================================================
+       CONFIGURAÇÃO
+
+       PAINÉIS:
+       largura = 1.20 m
+       altura  = 1.80 m
+
+       CORREDOR CENTRAL LIVRE:
+       0.80 m
+
+       Centros das colunas:
+       esquerda = X -1.00
+       direita  = X +1.00
+
+       Distância longitudinal:
+       1.00 m
+       ================================================== -->
+
 
   <!-- ==================================================
        PAINEL 1
+       ESQUERDA
        ================================================== -->
 
-  <a-entity position="-0.40 0 -1.0">
+  <a-entity position="-1.00 0 -1.0">
 
     <a-box
       width="1.26"
@@ -136,12 +155,12 @@
   </a-entity>
 
 
-
   <!-- ==================================================
        PAINEL 2
+       ESQUERDA
        ================================================== -->
 
-  <a-entity position="-0.40 0 -2.0">
+  <a-entity position="-1.00 0 -2.0">
 
     <a-box
       width="1.26"
@@ -151,6 +170,7 @@
       color="#222">
     </a-box>
 
+    <!-- FRENTE -->
     <a-plane
       src="#p2a"
       width="1.20"
@@ -159,6 +179,7 @@
       material="side: front">
     </a-plane>
 
+    <!-- VERSO -->
     <a-plane
       src="#p2b"
       width="1.20"
@@ -171,12 +192,12 @@
   </a-entity>
 
 
-
   <!-- ==================================================
        PAINEL 3
+       ESQUERDA
        ================================================== -->
 
-  <a-entity position="-0.40 0 -3.0">
+  <a-entity position="-1.00 0 -3.0">
 
     <a-box
       width="1.26"
@@ -186,6 +207,7 @@
       color="#222">
     </a-box>
 
+    <!-- FRENTE -->
     <a-plane
       src="#p3a"
       width="1.20"
@@ -194,6 +216,7 @@
       material="side: front">
     </a-plane>
 
+    <!-- VERSO -->
     <a-plane
       src="#p3b"
       width="1.20"
@@ -206,12 +229,12 @@
   </a-entity>
 
 
-
   <!-- ==================================================
        PAINEL 4
+       DIREITA
        ================================================== -->
 
-  <a-entity position="0.40 0 -1.0">
+  <a-entity position="1.00 0 -1.0">
 
     <a-box
       width="1.26"
@@ -221,6 +244,7 @@
       color="#222">
     </a-box>
 
+    <!-- FRENTE -->
     <a-plane
       src="#p4a"
       width="1.20"
@@ -229,6 +253,7 @@
       material="side: front">
     </a-plane>
 
+    <!-- VERSO -->
     <a-plane
       src="#p4b"
       width="1.20"
@@ -241,12 +266,12 @@
   </a-entity>
 
 
-
   <!-- ==================================================
        PAINEL 5
+       DIREITA
        ================================================== -->
 
-  <a-entity position="0.40 0 -2.0">
+  <a-entity position="1.00 0 -2.0">
 
     <a-box
       width="1.26"
@@ -256,6 +281,7 @@
       color="#222">
     </a-box>
 
+    <!-- FRENTE -->
     <a-plane
       src="#p5a"
       width="1.20"
@@ -264,6 +290,7 @@
       material="side: front">
     </a-plane>
 
+    <!-- VERSO -->
     <a-plane
       src="#p5b"
       width="1.20"
@@ -276,12 +303,12 @@
   </a-entity>
 
 
-
   <!-- ==================================================
        PAINEL 6
+       DIREITA
        ================================================== -->
 
-  <a-entity position="0.40 0 -3.0">
+  <a-entity position="1.00 0 -3.0">
 
     <a-box
       width="1.26"
@@ -291,6 +318,7 @@
       color="#222">
     </a-box>
 
+    <!-- FRENTE -->
     <a-plane
       src="#p6a"
       width="1.20"
@@ -299,6 +327,7 @@
       material="side: front">
     </a-plane>
 
+    <!-- VERSO -->
     <a-plane
       src="#p6b"
       width="1.20"
@@ -309,7 +338,6 @@
     </a-plane>
 
   </a-entity>
-
 
 
   <!-- ==================================================
@@ -325,7 +353,6 @@
 </a-scene>
 
 
-
 <!-- ==================================================
      TESTE AUTOMÁTICO DAS IMAGENS
      ================================================== -->
@@ -333,6 +360,7 @@
 <script>
 
 const arquivos = [
+
   "painel1a.png",
   "painel1b.png",
 
@@ -350,6 +378,7 @@ const arquivos = [
 
   "painel6a.png",
   "painel6b.png"
+
 ];
 
 
@@ -402,6 +431,7 @@ function atualizarStatus() {
       status.innerHTML =
         "✓ 12 imagens carregadas — Galeria MR pronta";
 
+
       setTimeout(function() {
 
         status.style.display = "none";
@@ -426,4 +456,5 @@ function atualizarStatus() {
 
 
 </body>
+
 </html>
