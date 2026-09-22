@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Configurador de Exposição WebXR</title>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.164.1/examples/js/exporters/GLTFExporter.js"></script>
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; font-family: Arial, Helvetica, sans-serif; background:#111; }
@@ -28,7 +27,7 @@
     #create { background:#f2c230; color:#111; }
     #clear { background:#33333a; color:#fff; }
     #enter { display:none; width:100%; margin-top:8px; background:#fff; color:#111; }
-    #exportGlb { display:none; width:100%; margin-top:8px; background:#59606b; color:#fff; }
+    #preloader, #standardSize { width:100%; margin-top:8px; background:#59606b; color:#fff; }
     #status { margin-top:11px; min-height:16px; font-size:11px; color:#ddd; line-height:1.4; }
     #credit { margin-top:18px; padding-top:12px; border-top:1px solid #34343a; color:#85858d; font-size:10px; text-align:center; }
     @media (max-width: 600px) {
@@ -59,6 +58,8 @@
     <label for="panelHeight">Altura do expositor (m)</label>
     <input id="panelHeight" type="number" min="0.2" max="10" step="0.05" value="1.80" />
 
+    <button id="standardSize">DIMENSÃO PADRÃO EXPOSITOR — 1,20 × 1,80 m</button>
+
     <label for="panelSide">Tipo de expositor</label>
     <select id="panelSide">
       <option value="front" selected>Frente</option>
@@ -75,8 +76,8 @@
       <button id="create">CRIAR</button>
       <button id="clear">LIMPAR</button>
     </div>
+    <button id="preloader">PRE-LOADER</button>
     <button id="enter">ENTRAR NA EXPOSIÇÃO</button>
-    <button id="exportGlb">EXPORTAR EXPOSITORES EM GLB</button>
     <div id="status">Pronto para criar.</div>
     <div id="credit">Desenvolvido por Hugo Duarte Tockaes.</div>
   </div>
@@ -104,14 +105,14 @@
     const virtualFloor = document.querySelector('#virtualFloor');
     const virtualSky = document.querySelector('#virtualSky');
     const enterButton = document.querySelector('#enter');
-    const exportButton = document.querySelector('#exportGlb');
+    const preloaderButton = document.querySelector('#preloader');
+    const standardSizeButton = document.querySelector('#standardSize');
     const scene = document.querySelector('a-scene');
     let galleryImages = [];
 
     function clearExhibition(clearFields = false) {
       while (root.firstChild) root.removeChild(root.firstChild);
       enterButton.style.display = 'none';
-      exportButton.style.display = 'none';
       galleryImages = [];
       if (clearFields) {
         columnsInput.value = '';
@@ -130,7 +131,7 @@
         const img = new Image();
         img.onload = () => resolve(url);
         img.onerror = () => resolve(null);
-        img.src = url + '?v=' + Date.now();
+        img.src = url;
       });
     }
 
@@ -197,15 +198,15 @@
       const centerY = frameHeight / 2 + 0.12;
       const stepX = panelWidth + spacing;
       const stepZ = frameDepth + columnSpacing;
-      const rows = Math.ceil(quantity / columns);
       const totalWidth = (columns - 1) * stepX;
-      const totalDepth = (rows - 1) * stepZ;
+      // A câmera começa em Z=4 olhando para -Z. A primeira fileira nasce próxima do visitante.
+      const firstRowZ = 1.5;
 
       for (let i = 0; i < quantity; i++) {
         const col = i % columns;
         const row = Math.floor(i / columns);
         const x = col * stepX - totalWidth / 2;
-        const z = -row * stepZ - 3 + totalDepth / 2;
+        const z = firstRowZ - row * stepZ;
         const exhibitor = document.createElement('a-entity');
         exhibitor.setAttribute('id', `expositor-${String(i + 1).padStart(2, '0')}`);
         exhibitor.setAttribute('position', `${x} 0 ${z}`);
@@ -258,81 +259,49 @@
       const galleryLabel = galleryImages.length ? `${galleryImages.length} imagens encontradas automaticamente` : 'nenhuma imagem encontrada em galeria/';
       status.textContent = `${quantity} expositores · ${galleryLabel} · ${panelWidth.toFixed(2)} × ${panelHeight.toFixed(2)} m · ${sideLabel} · ${modeLabel}.`;
       enterButton.style.display = 'block';
-      exportButton.style.display = 'block';
     }
 
-    function canvasTextureFromImage(imgEl) {
-      const canvas = document.createElement('canvas');
-      canvas.width = imgEl.naturalWidth || 1024;
-      canvas.height = imgEl.naturalHeight || 1024;
-      canvas.getContext('2d').drawImage(imgEl, 0, 0, canvas.width, canvas.height);
-      const texture = new THREE.CanvasTexture(canvas);
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.flipY = false;
-      return texture;
-    }
-
-    async function exportGLB() {
-      if (!root.children.length) return;
-      status.textContent = 'Preparando GLB com expositores e imagens...';
-      const exportScene = new THREE.Scene();
-      const panelWidth = Math.max(0.2, parseFloat(panelWidthInput.value) || 1.20);
-      const panelHeight = Math.max(0.2, parseFloat(panelHeightInput.value) || 1.80);
-      const frameWidth = panelWidth + 0.06;
-      const frameHeight = panelHeight + 0.06;
-      const frameDepth = 0.05;
-      const centerY = frameHeight / 2 + 0.12;
-      const frameMat = new THREE.MeshStandardMaterial({color:0x292929});
-      const blankMat = new THREE.MeshStandardMaterial({color:0xF7F2E8});
-
-      [...root.children].forEach((entity, i) => {
-        const group = new THREE.Group();
-        const p = entity.getAttribute('position');
-        group.position.set(p.x, p.y, p.z);
-        const frame = new THREE.Mesh(new THREE.BoxGeometry(frameWidth, frameHeight, frameDepth), frameMat);
-        frame.position.y = centerY;
-        group.add(frame);
-        const base = new THREE.Mesh(new THREE.BoxGeometry(.55,.15,.55), frameMat);
-        base.position.y = .075;
-        group.add(base);
-
-        const faceUrls = panelSideInput.value === 'double'
-          ? [galleryImages[i*2], galleryImages[i*2+1]]
-          : [galleryImages[i]];
-        faceUrls.forEach((url, faceIndex) => {
-          const isBack = faceIndex === 1;
-          let material = blankMat;
-          if (url) {
-            const aframeImg = [...entity.querySelectorAll('.gallery-image')][faceIndex];
-            const htmlImg = aframeImg?.components?.material?.material?.map?.image;
-            if (htmlImg) material = new THREE.MeshBasicMaterial({map:canvasTextureFromImage(htmlImg), side:THREE.DoubleSide});
-          }
-          const plane = new THREE.Mesh(new THREE.PlaneGeometry(panelWidth,panelHeight), material);
-          plane.position.set(0, centerY, isBack ? -(frameDepth/2+.012) : (frameDepth/2+.012));
-          if (isBack) plane.rotation.y = Math.PI;
-          group.add(plane);
+    async function preloadGallery() {
+      preloaderButton.disabled = true;
+      const originalText = 'PRE-LOADER';
+      galleryImages = [];
+      let n = 1;
+      while (n <= 500) {
+        preloaderButton.textContent = `CARREGANDO ${n}...`;
+        const url = await findSequentialImage(n);
+        if (!url) break;
+        // Mantém a imagem decodificada/cacheada antes da entrada na exposição.
+        await new Promise(resolve => {
+          const img = new Image();
+          img.onload = async () => {
+            try { if (img.decode) await img.decode(); } catch (_) {}
+            resolve();
+          };
+          img.onerror = resolve;
+          img.src = url;
         });
-        exportScene.add(group);
-      });
-
-      const exporter = new THREE.GLTFExporter();
-      exporter.parse(exportScene, result => {
-        const blob = new Blob([result], {type:'model/gltf-binary'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'exposicao.glb';
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-        status.textContent = 'GLB exportado: somente expositores e imagens.';
-      }, error => {
-        console.error(error);
-        status.textContent = 'Não foi possível exportar o GLB neste navegador.';
-      }, {binary:true});
+        galleryImages.push(url);
+        n++;
+      }
+      preloaderButton.textContent = galleryImages.length
+        ? `PRE-LOAD CONCLUÍDO — ${galleryImages.length} IMAGENS`
+        : 'PRE-LOADER — NENHUMA IMAGEM';
+      status.textContent = galleryImages.length
+        ? `${galleryImages.length} imagens pré-carregadas da pasta galeria.`
+        : 'Nenhuma imagem sequencial encontrada na pasta galeria.';
+      preloaderButton.disabled = false;
+      setTimeout(() => { preloaderButton.textContent = originalText; }, 3500);
     }
+
+    standardSizeButton.addEventListener('click', () => {
+      panelWidthInput.value = '1.20';
+      panelHeightInput.value = '1.80';
+      status.textContent = 'Dimensão padrão aplicada: 1,20 × 1,80 m.';
+    });
+    preloaderButton.addEventListener('click', preloadGallery);
 
     document.querySelector('#create').addEventListener('click', createExhibition);
     document.querySelector('#clear').addEventListener('click', () => clearExhibition(true));
-    exportButton.addEventListener('click', exportGLB);
     enterButton.addEventListener('click', async () => {
       document.querySelector('#ui').style.display = 'none';
       const mixedReality = xrModeInput.value === 'mr';
