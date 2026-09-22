@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no"
+  >
+
+  <title>História do Cinema — Exposição MR</title>
+
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      font-family: Arial, sans-serif;
+    }
+
+    #status {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+
+      padding: 12px 18px;
+      border-radius: 12px;
+
+      background: rgba(0,0,0,.80);
+      color: white;
+
+      font-size: 14px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #entrada {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      overflow-y: auto;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(20,65,110,.35), transparent 42%),
+        linear-gradient(180deg, #05080d 0%, #090d12 100%);
+      color: #fff;
+    }
+
+    .hero {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      box-sizing: border-box;
+      padding-bottom: 48px;
+    }
+
+    .hero img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 62vh;
+      object-fit: cover;
+      object-position: center;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .hero-conteudo {
+      width: min(900px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 10px;
+      text-align: center;
+    }
+
+    .hero-conteudo h1 {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 5vw, 58px);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .subtitulo {
+      margin: 0 auto 18px;
+      max-width: 720px;
+      color: #d8dde5;
+      font-size: clamp(16px, 2.2vw, 21px);
+      line-height: 1.5;
+    }
+
+    .autor {
+      margin: 18px 0 26px;
+      color: #aeb9c8;
+      font-size: 14px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    #entrarMR {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,.30);
+      border-radius: 999px;
+      padding: 16px 30px;
+      background: linear-gradient(90deg, #d59a22, #ffffff 48%, #1688ff);
+      color: #05080d;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 12px 38px rgba(0,95,255,.24);
+    }
+
+    #entrarMR:active {
+      transform: scale(.98);
+    }
+
+    .instrucao {
+      margin: 15px auto 0;
+      max-width: 650px;
+      color: #8994a3;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #mensagemXR {
+      min-height: 22px;
+      margin-top: 12px;
+      color: #d9e8ff;
+      font-size: 13px;
+    }
+
+    body.xr-ativo #entrada {
+      display: none;
+    }
+
+    body:not(.xr-ativo) #status {
+      display: none;
+    }
+  </style>
+</head>
+
+
+<body>
+
+
+<div id="entrada">
+  <main class="hero">
+    <img src="./topo.png" alt="História do Cinema — das primeiras imagens em movimento às experiências imersivas">
+
+    <section class="hero-conteudo">
+      <h1>História do Cinema</h1>
+
+      <p class="subtitulo">
+        Uma viagem pela história do cinema — dos primeiros experimentos com imagens
+        em movimento e do nascimento das salas de exibição, passando pelo cinema
+        sonoro, pelas cores e pelos grandes avanços tecnológicos, até as produções
+        digitais e as experiências imersivas.
+      </p>
+
+      <p class="autor">
+        Uma exposição de Hugo Duarte Tockaes
+      </p>
+
+      <button id="entrarMR" type="button">
+        Entrar na exposição em realidade mista
+      </button>
+
+      <p class="instrucao">
+        No Meta Quest, toque no botão acima para iniciar a experiência.
+        Os seis expositores e suas doze pranchas serão ativados no ambiente real.
+      </p>
+
+      <div id="mensagemXR"></div>
+    </section>
+  </main>
+</div>
+
+<div id="status">
+  Verificando imagens...
+</div>
+
+
+<a-scene
+
+  webxr="
+    requiredFeatures: local-floor;
+    optionalFeatures: bounded-floor, hand-tracking;
+    referenceSpaceType: local-floor;
+    overlayElement: #status;
+  "
+
+  xr-mode-ui="
+    enabled: true;
+    XRMode: ar;
+  "
+
+  renderer="
+    antialias: true;
+    alpha: true;
+    colorManagement: true;
+  "
+
+  background="transparent: true"
+>
+
+
+  <!-- ==================================================
+       IMAGENS
+       ================================================== -->
+
+  <a-assets timeout="10000">
+
+    <img id="p1a" src="./painel1a.png" crossorigin="anonymous">
+    <img id="p1b" src="./painel1b.png" crossorigin="anonymous">
+
+    <img id="p2a" src="./painel2a.png" crossorigin="anonymous">
+    <img id="p2b" src="./painel2b.png" crossorigin="anonymous">
+
+    <img id="p3a" src="./painel3a.png" crossorigin="anonymous">
+    <img id="p3b" src="./painel3b.png" crossorigin="anonymous">
+
+    <img id="p4a" src="./painel4a.png" crossorigin="anonymous">
+    <img id="p4b" src="./painel4b.png" crossorigin="anonymous">
+
+    <img id="p5a" src="./painel5a.png" crossorigin="anonymous">
+    <img id="p5b" src="./painel5b.png" crossorigin="anonymous">
+
+    <img id="p6a" src="./painel6a.png" crossorigin="anonymous">
+    <img id="p6b" src="./painel6b.png" crossorigin="anonymous">
+
+  </a-assets>
+
+
+  <!-- ==================================================
+       CONFIGURAÇÃO
+
+       PAINÉIS:
+       largura = 1.20 m
+       altura  = 1.80 m
+
+       CORREDOR CENTRAL LIVRE:
+       0.80 m
+
+       Centros das colunas:
+       esquerda = X -1.00
+       direita  = X +1.00
+
+       Distância longitudinal:
+       1.00 m
+       ================================================== -->
+
+
+  <!-- ==================================================
+       PAINEL 1
+       ESQUERDA
+       ================================================== -->
+
+  <a-entity class="painel-exposicao" visible="false" position="-1.00 0 -1.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p1a"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p1b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       PAINEL 2
+       ESQUERDA
+       ================================================== -->
+
+  <a-entity class="painel-exposicao" visible="false" position="-1.00 0 -2.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p2a"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p2b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       PAINEL 3
+       ESQUERDA
+       ================================================== -->
+
+  <a-entity class="painel-exposicao" visible="false" position="-1.00 0 -3.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p3a"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p3b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       PAINEL 4
+       DIREITA
+       ================================================== -->
+
+  <a-entity class="painel-exposicao" visible="false" position="1.00 0 -1.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p4a"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p4b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       PAINEL 5
+       DIREITA
+       ================================================== -->
+
+  <a-entity class="painel-exposicao" visible="false" position="1.00 0 -2.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p5a"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p5b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       PAINEL 6
+       DIREITA
+       ================================================== -->
+
+  <a-entity class="painel-exposicao" visible="false" position="1.00 0 -3.0">
+
+    <a-box
+      width="1.26"
+      height="1.86"
+      depth="0.05"
+      position="0 1.15 0"
+      color="#222">
+    </a-box>
+
+    <!-- FRENTE -->
+    <a-plane
+      src="#p6a"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 0.031"
+      material="side: front">
+    </a-plane>
+
+    <!-- VERSO -->
+    <a-plane
+      src="#p6b"
+      width="1.20"
+      height="1.80"
+      position="0 1.15 -0.031"
+      rotation="0 180 0"
+      material="side: front">
+    </a-plane>
+
+  </a-entity>
+
+
+  <!-- ==================================================
+       CÂMERA
+       ================================================== -->
+
+  <a-camera
+    position="0 1.6 0"
+    wasd-controls-enabled="false">
+  </a-camera>
+
+
+</a-scene>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const scene = document.querySelector("a-scene");
+  const botao = document.getElementById("entrarMR");
+  const mensagem = document.getElementById("mensagemXR");
+  const paineis = document.querySelectorAll(".painel-exposicao");
+
+  function mostrarPaineis() {
+    paineis.forEach(function (painel) {
+      painel.setAttribute("visible", true);
+    });
+  }
+
+  function ocultarPaineis() {
+    paineis.forEach(function (painel) {
+      painel.setAttribute("visible", false);
+    });
+  }
+
+  botao.addEventListener("click", async function () {
+    botao.disabled = true;
+    botao.textContent = "Iniciando realidade mista...";
+    mensagem.textContent = "";
+
+    mostrarPaineis();
+
+    try {
+      if (!scene.hasLoaded) {
+        await new Promise(function (resolve) {
+          scene.addEventListener("loaded", resolve, { once: true });
+        });
+      }
+
+      if (typeof scene.enterAR === "function") {
+        await scene.enterAR();
+      } else {
+        throw new Error("Este navegador não disponibilizou o modo AR.");
+      }
+    } catch (erro) {
+      ocultarPaineis();
+      botao.disabled = false;
+      botao.textContent = "Entrar na exposição em realidade mista";
+      mensagem.textContent =
+        "Não foi possível iniciar a realidade mista. Abra esta página no navegador do Meta Quest e tente novamente.";
+      console.error(erro);
+    }
+  });
+
+  scene.addEventListener("enter-vr", function () {
+    if (scene.is("ar-mode")) {
+      mostrarPaineis();
+      document.body.classList.add("xr-ativo");
+      document.getElementById("status").style.display = "block";
+    }
+  });
+
+  scene.addEventListener("exit-vr", function () {
+    ocultarPaineis();
+    document.body.classList.remove("xr-ativo");
+    botao.disabled = false;
+    botao.textContent = "Entrar na exposição em realidade mista";
+    mensagem.textContent = "";
+  });
+});
+</script>
+
+<!-- ==================================================
+     TESTE AUTOMÁTICO DAS IMAGENS
+     ================================================== -->
+
+<script>
+
+const arquivos = [
+
+  "painel1a.png",
+  "painel1b.png",
+
+  "painel2a.png",
+  "painel2b.png",
+
+  "painel3a.png",
+  "painel3b.png",
+
+  "painel4a.png",
+  "painel4b.png",
+
+  "painel5a.png",
+  "painel5b.png",
+
+  "painel6a.png",
+  "painel6b.png"
+
+];
+
+
+let carregadas = 0;
+let erros = [];
+
+
+arquivos.forEach(function(arquivo) {
+
+  const imagem = new Image();
+
+
+  imagem.onload = function() {
+
+    carregadas++;
+
+    atualizarStatus();
+
+  };
+
+
+  imagem.onerror = function() {
+
+    erros.push(arquivo);
+
+    atualizarStatus();
+
+  };
+
+
+  imagem.src = "./" + arquivo;
+
+});
+
+
+function atualizarStatus() {
+
+  const totalProcessado =
+    carregadas + erros.length;
+
+
+  if(totalProcessado === arquivos.length) {
+
+    const status =
+      document.getElementById("status");
+
+
+    if(erros.length === 0) {
+
+      status.innerHTML =
+        "✓ 12 imagens carregadas — Galeria MR pronta";
+
+
+      setTimeout(function() {
+
+        status.style.display = "none";
+
+      }, 3000);
+
+    }
+
+    else {
+
+      status.innerHTML =
+        "ERRO: arquivos não encontrados:<br>" +
+        erros.join("<br>");
+
+    }
+
+  }
+
+}
+
+</script>
+
+
+</body>
+
+</html>
