@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Configurador de Exposição WebXR</title>
+  <title>Configurador de Exposição WebXR — V2</title>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <style>
     * { box-sizing: border-box; }
@@ -37,8 +37,8 @@
 </head>
 <body>
   <div id="ui">
-    <h1>CONFIGURADOR DE EXPOSIÇÃO</h1>
-    <p>Protótipo WebXR · geração automática de expositores · imagens carregadas da pasta <strong>galeria</strong></p>
+    <h1>CONFIGURADOR DE EXPOSIÇÃO · V2</h1>
+    <p>Protótipo WebXR · toque com as mãos · imagens e fundos 360 carregados da pasta <strong>galeria</strong></p>
 
     <label for="columns">Colunas</label>
     <input id="columns" type="number" min="1" max="20" value="2" />
@@ -87,6 +87,8 @@
     <a-entity light="type: directional; intensity: 1.2" position="2 6 3"></a-entity>
     <a-plane id="virtualFloor" position="0 0 -6" rotation="-90 0 0" width="60" height="60" color="#B8B8B8"></a-plane>
     <a-sky id="virtualSky" color="#ECECEC"></a-sky>
+    <!-- Fundo 360 contextual: aparece enquanto a mão permanece tocando um expositor. -->
+    <a-sky id="touch360" visible="false" radius="80" material="shader: flat; transparent: true; opacity: 0; side: back"></a-sky>
     <a-entity id="exhibition-root"></a-entity>
 
     <!-- Hand tracking: pinch + segurar recentraliza a exposição ao redor do visitante. -->
@@ -115,6 +117,7 @@
     const xrModeInput = document.querySelector('#xrMode');
     const virtualFloor = document.querySelector('#virtualFloor');
     const virtualSky = document.querySelector('#virtualSky');
+    const touch360 = document.querySelector('#touch360');
     const enterButton = document.querySelector('#enter');
     const preloaderButton = document.querySelector('#preloader');
     const standardSizeButton = document.querySelector('#standardSize');
@@ -125,6 +128,14 @@
     const pinchLoader = document.querySelector('#pinchLoader');
     const pinchLoaderArc = document.querySelector('#pinchLoaderArc');
     let galleryImages = [];
+    let galleryBackgrounds = new Map();
+    let activeTouchedFace = null;
+    let activeTouchImageNumber = null;
+    let touchFadeRAF = null;
+    let touch360Token = 0;
+    const TOUCH_DISTANCE = 0.065;
+    const TOUCH_FADE_IN_MS = 180;
+    const TOUCH_FADE_OUT_MS = 150;
     let pinchTimer = null;
     let pinchAnimation = null;
     let activePinchHand = null;
@@ -137,6 +148,8 @@
       cancelPinchHold();
       enterButton.style.display = 'none';
       galleryImages = [];
+      galleryBackgrounds.clear();
+      hideTouch360(true);
       if (clearFields) {
         columnsInput.value = '';
         spacingInput.value = '';
@@ -156,6 +169,17 @@
         img.onerror = () => resolve(null);
         img.src = url;
       });
+    }
+
+    async function findSequentialBackground(n) {
+      if (galleryBackgrounds.has(n)) return galleryBackgrounds.get(n);
+      const extensions = ['png', 'jpg', 'jpeg', 'webp'];
+      for (const ext of extensions) {
+        const found = await imageExists(`galeria/fundo${n}.${ext}`);
+        if (found) { galleryBackgrounds.set(n, found); return found; }
+      }
+      galleryBackgrounds.set(n, null);
+      return null;
     }
 
     async function findSequentialImage(n) {
@@ -180,11 +204,12 @@
       return found;
     }
 
-    function addImageFace(exhibitor, url, centerY, panelWidth, panelHeight, frameDepth, side) {
+    function addImageFace(exhibitor, url, centerY, panelWidth, panelHeight, frameDepth, side, imageNumber) {
       const image = document.createElement('a-image');
       const isBack = side === 'back';
       image.setAttribute('class', isBack ? 'gallery-image face-back' : 'gallery-image face-front');
       image.setAttribute('data-face', side);
+      image.setAttribute('data-image-number', String(imageNumber));
       image.setAttribute('src', url);
       image.setAttribute('width', panelWidth);
       image.setAttribute('height', panelHeight);
@@ -259,7 +284,7 @@
         exhibitor.appendChild(frontPanel);
 
         const frontImageIndex = panelSide === 'double' ? i * 2 : i;
-        if (galleryImages[frontImageIndex]) addImageFace(exhibitor, galleryImages[frontImageIndex], centerY, panelWidth, panelHeight, frameDepth, 'front');
+        if (galleryImages[frontImageIndex]) addImageFace(exhibitor, galleryImages[frontImageIndex], centerY, panelWidth, panelHeight, frameDepth, 'front', frontImageIndex + 1);
 
         if (panelSide === 'double') {
           const backPanel = document.createElement('a-box');
@@ -270,7 +295,7 @@
           backPanel.setAttribute('depth', '0.01');
           backPanel.setAttribute('color', '#F7F2E8');
           exhibitor.appendChild(backPanel);
-          if (galleryImages[i * 2 + 1]) addImageFace(exhibitor, galleryImages[i * 2 + 1], centerY, panelWidth, panelHeight, frameDepth, 'back');
+          if (galleryImages[i * 2 + 1]) addImageFace(exhibitor, galleryImages[i * 2 + 1], centerY, panelWidth, panelHeight, frameDepth, 'back', i * 2 + 2);
         }
 
         exhibitor.appendChild(base);
@@ -304,17 +329,151 @@
           img.src = url;
         });
         galleryImages.push(url);
+        // V2: também aquece o cache do fundo 360 correspondente (fundo1, fundo2...).
+        const bgUrl = await findSequentialBackground(n);
+        if (bgUrl) {
+          await new Promise(resolve => {
+            const bg = new Image();
+            bg.onload = async () => { try { if (bg.decode) await bg.decode(); } catch (_) {} resolve(); };
+            bg.onerror = resolve;
+            bg.src = bgUrl;
+          });
+        }
         n++;
       }
       preloaderButton.textContent = galleryImages.length
         ? `PRE-LOAD CONCLUÍDO — ${galleryImages.length} IMAGENS`
         : 'PRE-LOADER — NENHUMA IMAGEM';
       status.textContent = galleryImages.length
-        ? `${galleryImages.length} imagens pré-carregadas da pasta galeria.`
+        ? `${galleryImages.length} imagens e fundos 360 correspondentes pré-carregados da pasta galeria.`
         : 'Nenhuma imagem sequencial encontrada na pasta galeria.';
       preloaderButton.disabled = false;
       setTimeout(() => { preloaderButton.textContent = originalText; }, 3500);
     }
+
+
+    function setTouch360Opacity(value) {
+      touch360.setAttribute('material', 'opacity', Math.max(0, Math.min(1, value)));
+    }
+
+    function fadeTouch360(from, to, duration, onDone) {
+      if (touchFadeRAF) cancelAnimationFrame(touchFadeRAF);
+      const start = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / duration);
+        // smoothstep: transição curta, mas sem corte seco.
+        const eased = t * t * (3 - 2 * t);
+        setTouch360Opacity(from + (to - from) * eased);
+        if (t < 1) touchFadeRAF = requestAnimationFrame(step);
+        else { touchFadeRAF = null; if (onDone) onDone(); }
+      };
+      touchFadeRAF = requestAnimationFrame(step);
+    }
+
+    async function showTouch360(imageNumber) {
+      if (!imageNumber || activeTouchImageNumber === imageNumber) return;
+      const token = ++touch360Token;
+      const bgUrl = await findSequentialBackground(imageNumber);
+      if (token !== touch360Token || activeTouchImageNumber !== imageNumber) return;
+      if (!bgUrl) {
+        status.textContent = `Imagem ${imageNumber}: fundo${imageNumber} não encontrado na pasta galeria.`;
+        return;
+      }
+      touch360.setAttribute('src', bgUrl);
+      touch360.setAttribute('visible', true);
+      setTouch360Opacity(0);
+      // Pequeno atraso para a textura entrar antes do fade.
+      requestAnimationFrame(() => fadeTouch360(0, 1, TOUCH_FADE_IN_MS));
+    }
+
+    function hideTouch360(immediate = false) {
+      ++touch360Token;
+      activeTouchImageNumber = null;
+      activeTouchedFace = null;
+      if (touchFadeRAF) { cancelAnimationFrame(touchFadeRAF); touchFadeRAF = null; }
+      const current = parseFloat(touch360.getAttribute('material')?.opacity ?? 0) || 0;
+      if (immediate) {
+        setTouch360Opacity(0);
+        touch360.setAttribute('visible', false);
+        touch360.removeAttribute('src');
+        return;
+      }
+      fadeTouch360(current, 0, TOUCH_FADE_OUT_MS, () => {
+        touch360.setAttribute('visible', false);
+        touch360.removeAttribute('src');
+      });
+    }
+
+    function worldPointFromJointPose(pose) {
+      return new THREE.Vector3(
+        pose.transform.position.x,
+        pose.transform.position.y,
+        pose.transform.position.z
+      );
+    }
+
+    function fingertipPositions() {
+      const frame = scene.frame;
+      const session = scene.renderer?.xr?.getSession?.();
+      const refSpace = scene.renderer?.xr?.getReferenceSpace?.();
+      if (!frame || !session || !refSpace) return [];
+      const points = [];
+      for (const source of session.inputSources) {
+        if (!source.hand) continue;
+        const tip = source.hand.get('index-finger-tip');
+        if (!tip) continue;
+        const pose = frame.getJointPose(tip, refSpace);
+        if (pose) points.push(worldPointFromJointPose(pose));
+      }
+      return points;
+    }
+
+    function closestTouchedGalleryFace(points) {
+      if (!points.length) return null;
+      const faces = root.querySelectorAll('.gallery-image');
+      let best = null;
+      let bestDistance = Infinity;
+      const inverse = new THREE.Matrix4();
+      const local = new THREE.Vector3();
+      for (const face of faces) {
+        if (!face.object3D.visible) continue;
+        face.object3D.updateMatrixWorld(true);
+        inverse.copy(face.object3D.matrixWorld).invert();
+        const width = parseFloat(face.getAttribute('width')) || 1.2;
+        const height = parseFloat(face.getAttribute('height')) || 1.8;
+        for (const point of points) {
+          local.copy(point).applyMatrix4(inverse);
+          const inside = Math.abs(local.x) <= width / 2 && Math.abs(local.y) <= height / 2;
+          const distance = Math.abs(local.z);
+          if (inside && distance <= TOUCH_DISTANCE && distance < bestDistance) {
+            bestDistance = distance;
+            best = face;
+          }
+        }
+      }
+      return best;
+    }
+
+    // V2: contato direto com a mão, sem cursor central. O fundo permanece apenas
+    // enquanto a ponta do indicador estiver encostada na imagem do expositor.
+    AFRAME.registerComponent('gallery-hand-touch', {
+      tick: function () {
+        if (!scene.is('vr-mode') || !root.children.length) {
+          if (activeTouchedFace) hideTouch360();
+          return;
+        }
+        const touched = closestTouchedGalleryFace(fingertipPositions());
+        if (touched === activeTouchedFace) return;
+        if (!touched) {
+          if (activeTouchedFace) hideTouch360();
+          return;
+        }
+        activeTouchedFace = touched;
+        activeTouchImageNumber = parseInt(touched.getAttribute('data-image-number'), 10);
+        showTouch360(activeTouchImageNumber);
+      }
+    });
+    scene.setAttribute('gallery-hand-touch', '');
 
 
 
