@@ -91,17 +91,18 @@
     <a-sky id="touch360" visible="false" radius="80" material="shader: flat; transparent: true; opacity: 0; side: back"></a-sky>
     <a-entity id="exhibition-root"></a-entity>
 
-    <!-- Hand tracking: pinch + segurar recentraliza a exposição ao redor do visitante. -->
-    <a-entity id="leftHand" hand-tracking-controls="hand: left; modelColor: #ffffff"></a-entity>
-    <a-entity id="rightHand" hand-tracking-controls="hand: right; modelColor: #ffffff"></a-entity>
-
     <!-- Loader visual do gesto. É reposicionado próximo à mão que iniciou o pinch. -->
     <a-entity id="pinchLoader" visible="false">
       <a-ring radius-inner="0.035" radius-outer="0.045" color="#FFFFFF" material="shader: flat; opacity: 0.28; transparent: true"></a-ring>
       <a-torus id="pinchLoaderArc" radius="0.040" radius-tubular="0.006" arc="85" color="#F2C230" material="shader: flat" rotation="0 0 0"></a-torus>
     </a-entity>
 
-    <a-entity id="rig" position="0 0 4"><a-camera id="viewerCamera" position="0 1.70 0" look-controls wasd-controls="acceleration: 25"></a-camera></a-entity>
+    <a-entity id="rig" position="0 0 4">
+      <a-camera id="viewerCamera" position="0 1.70 0" look-controls wasd-controls="acceleration: 25"></a-camera>
+      <!-- As mãos ficam no mesmo espaço transformado do headset, evitando o deslocamento visual. -->
+      <a-entity id="leftHand" hand-tracking-controls="hand: left; modelColor: #ffffff"></a-entity>
+      <a-entity id="rightHand" hand-tracking-controls="hand: right; modelColor: #ffffff"></a-entity>
+    </a-entity>
   </a-scene>
 
   <script>
@@ -405,11 +406,17 @@
     }
 
     function worldPointFromJointPose(pose) {
-      return new THREE.Vector3(
+      // getJointPose() retorna a junta no reference space do WebXR. Como câmera e mãos
+      // vivem dentro do #rig, convertemos esse ponto para o MESMO espaço mundial dos
+      // expositores. Isso elimina o offset que fazia o toque aparecer longe da mão real.
+      const point = new THREE.Vector3(
         pose.transform.position.x,
         pose.transform.position.y,
         pose.transform.position.z
       );
+      const rig = document.querySelector('#rig');
+      rig.object3D.updateMatrixWorld(true);
+      return point.applyMatrix4(rig.object3D.matrixWorld);
     }
 
     function fingertipPositions() {
