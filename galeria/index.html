@@ -82,7 +82,7 @@
     <div id="credit">Desenvolvido por Hugo Duarte Tockaes.</div>
   </div>
 
-  <a-scene background="color: #D9D9D9" renderer="colorManagement: true; antialias: true; alpha: true" webxr="optionalFeatures: local-floor, bounded-floor, hit-test, hand-tracking" xr-mode-ui="XRMode: xr">
+  <a-scene background="color: #D9D9D9" renderer="colorManagement: true; antialias: true; alpha: true" webxr="requiredFeatures: local-floor; optionalFeatures: bounded-floor, hit-test, hand-tracking" xr-mode-ui="XRMode: xr">
     <a-entity light="type: ambient; intensity: 1.1"></a-entity>
     <a-entity light="type: directional; intensity: 1.2" position="2 6 3"></a-entity>
     <a-plane id="virtualFloor" position="0 0 -6" rotation="-90 0 0" width="60" height="60" color="#B8B8B8"></a-plane>
@@ -333,20 +333,31 @@
     }
 
     function recenterExhibition() {
-      const center = getExhibitionCenterWorldLocal();
-      if (!center || !viewerCamera.object3D) return;
+      if (!viewerCamera.object3D) return;
+
+      const firstExhibitor = document.querySelector('#expositor-01');
+      if (!firstExhibitor) return;
 
       const headWorld = new THREE.Vector3();
       viewerCamera.object3D.getWorldPosition(headWorld);
 
-      // Em WebXR não movemos o tracking origin do Quest. Movemos a exposição inteira
-      // para que o centro geométrico dela coincida com a posição atual do visitante.
-      root.object3D.position.x = headWorld.x - center.x;
-      root.object3D.position.z = headWorld.z - center.z;
+      // Direção horizontal para onde o visitante está olhando.
+      const forward = new THREE.Vector3();
+      viewerCamera.object3D.getWorldDirection(forward);
+      forward.y = 0;
+      if (forward.lengthSq() < 0.0001) forward.set(0, 0, -1);
+      forward.normalize();
+
+      // Coloca o centro do expositor 1 exatamente a 1 metro à frente do visitante.
+      const target = headWorld.clone().add(forward.multiplyScalar(1.0));
+      const local = firstExhibitor.object3D.position;
+
+      root.object3D.position.x = target.x - local.x;
+      root.object3D.position.z = target.z - local.z;
       root.object3D.position.y = 0;
       root.object3D.updateMatrixWorld(true);
 
-      status.textContent = 'Exposição recentralizada na sua posição atual.';
+      status.textContent = 'Exposição recentralizada: expositor 1 a 1 m à sua frente.';
     }
 
     function placeLoaderAtHand(hand) {
@@ -417,14 +428,28 @@
       virtualFloor.setAttribute('visible', !mixedReality);
       scene.setAttribute('background', mixedReality ? 'transparent: true' : 'color: #D9D9D9');
       try {
-        if (mixedReality && scene.enterAR) await scene.enterAR();
-        else if (scene.enterVR) await scene.enterVR();
+        if (mixedReality) {
+          // Solicita explicitamente uma sessão immersive-ar no Quest.
+          // Isso evita depender do atalho enterAR(), que pode não iniciar o passthrough.
+          if (!navigator.xr) throw new Error('WebXR indisponível');
+          const supported = await navigator.xr.isSessionSupported('immersive-ar');
+          if (!supported) throw new Error('immersive-ar não suportado');
+
+          const session = await navigator.xr.requestSession('immersive-ar', {
+            requiredFeatures: ['local-floor'],
+            optionalFeatures: ['bounded-floor', 'hand-tracking']
+          });
+          await scene.renderer.xr.setSession(session);
+        } else if (scene.enterVR) {
+          await scene.enterVR();
+        }
       } catch (e) {
         document.querySelector('#ui').style.display = 'block';
         status.textContent = mixedReality ? 'O navegador/dispositivo não iniciou a sessão de Realidade Mista.' : 'O navegador/dispositivo não iniciou a sessão de Realidade Virtual.';
       }
     });
     scene.addEventListener('exit-vr', () => document.querySelector('#ui').style.display = 'block');
+    scene.addEventListener('exit-ar', () => document.querySelector('#ui').style.display = 'block');
   </script>
 </body>
 </html>
